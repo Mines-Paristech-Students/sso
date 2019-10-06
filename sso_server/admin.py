@@ -1,3 +1,4 @@
 from django.contrib import admin
+from sso_server.models import Access
 
-# Register your models here.
+admin.site.register(Access)

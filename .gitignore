@@ -2,3 +2,4 @@ venv/
 .idea/
 
 sso_server/migrations/
+*.pyc
