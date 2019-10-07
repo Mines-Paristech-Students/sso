@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 
 from sso_server.models import Access
-from sso_server.token import create_token, decode_token
+from sso_server.token import create_token_for_user, decode_token
 
 
 class CreateTokenSerializer(serializers.Serializer):
@@ -30,7 +30,7 @@ class CreateTokenSerializer(serializers.Serializer):
                 "This user is not allowed to access this audience."
             )
 
-        data["access"] = create_token(user, data["audience"])
+        data["access"] = create_token_for_user(user, data["audience"])
 
         return data
 

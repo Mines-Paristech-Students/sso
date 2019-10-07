@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import uuid4
 
 from django.conf import settings
@@ -8,31 +8,35 @@ import jwt
 from sso_server.models import Access
 
 
-def create_token(user: User, audience: str) -> str:
+def create_token(
+    audience: str,
+    username: str,
+    lifetime: timedelta = settings.JWT_AUTH_SETTINGS["ACCESS_TOKEN_LIFETIME"],
+    jti: str = uuid4().hex,
+    issuer: str = settings.JWT_AUTH_SETTINGS["ISSUER"],
+    key: bytes = settings.JWT_AUTH_SETTINGS["PRIVATE_KEY"],
+    algorithm: str = settings.JWT_AUTH_SETTINGS["ALGORITHM"],
+):
+    payload = {
+        "exp": (datetime.utcnow() + lifetime).timestamp(),
+        "iss": issuer,
+        "aud": audience,
+        "jti": jti,
+        settings.JWT_AUTH_SETTINGS["USER_ID_CLAIM_NAME"]: username,
+    }
+
+    return jwt.encode(payload=payload, key=key, algorithm=algorithm).decode(
+        "utf-8"
+    )  # jwt.encode returns a bytes object, it thus has to be decoded to a str.
+
+
+def create_token_for_user(user: User, audience: str) -> str:
     """Return a Token granting the specified user access to the specified audience."""
 
     if audience not in (x[0] for x in Access.AUDIENCES):
         raise ValueError("The specified audience is incorrect.")
 
-    payload = {
-        "exp": int(
-            (
-                datetime.utcnow() + settings.JWT_AUTH_SETTINGS["ACCESS_TOKEN_LIFETIME"]
-            ).timestamp()
-        ),
-        "iss": settings.JWT_AUTH_SETTINGS["ISSUER"],
-        "aud": str(audience),
-        "jti": uuid4().hex,
-        settings.JWT_AUTH_SETTINGS["USER_ID_CLAIM_NAME"]: str(user.username),
-    }
-
-    return jwt.encode(
-        payload=payload,
-        key=settings.JWT_AUTH_SETTINGS["PRIVATE_KEY"],
-        algorithm=settings.JWT_AUTH_SETTINGS["ALGORITHM"],
-    ).decode(
-        "utf-8"
-    )  # jwt.encode returns a bytes object, it thus has to be decoded to a str.
+    return create_token(audience=str(audience), username=str(user.username))
 
 
 def decode_token(token: str) -> dict:
