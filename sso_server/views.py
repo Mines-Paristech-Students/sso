@@ -1,9 +1,9 @@
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from rest_framework import generics, status
 from rest_framework.response import Response
 
 from sso_server.serializers import CreateTokenSerializer, DecodeTokenSerializer
-from sso_server.settings import API_SETTINGS
 
 
 class LoginView(generics.GenericAPIView):
@@ -22,8 +22,8 @@ class LoginView(generics.GenericAPIView):
         access = serializer.validated_data["access"]  # The JWT token.
 
         # Compute the redirect URL with the JWT token as a GET parameter.
-        base_url = API_SETTINGS["REDIRECT_URLS"][audience]
-        parameter = f"{API_SETTINGS['GET_PARAMETER']}={access}"
+        base_url = settings.JWT_AUTH_SETTINGS["REDIRECT_URLS"][audience]
+        parameter = f"{settings.JWT_AUTH_SETTINGS['GET_PARAMETER']}={access}"
         redirect_url = f"{base_url}?{parameter}"
 
         return HttpResponseRedirect(redirect_url)

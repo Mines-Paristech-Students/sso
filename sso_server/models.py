@@ -1,7 +1,6 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-
-from sso_server.settings import API_SETTINGS
 
 
 class Access(models.Model):
@@ -9,8 +8,8 @@ class Access(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    AUDIENCES = [(k, k) for k in API_SETTINGS["REDIRECT_URLS"].keys()]
-    REDIRECT_URLS = API_SETTINGS["REDIRECT_URLS"]
+    AUDIENCES = [(k, k) for k in settings.JWT_AUTH_SETTINGS["REDIRECT_URLS"].keys()]
+    REDIRECT_URLS = settings.JWT_AUTH_SETTINGS["REDIRECT_URLS"]
 
     audience = models.CharField(
         max_length=10, choices=AUDIENCES, blank=True, default=""
