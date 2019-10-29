@@ -1,5 +1,7 @@
 venv/
 .idea/
+node_modules/
 
 sso_server/migrations/
+
 *.pyc
