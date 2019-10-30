@@ -12,11 +12,12 @@ def create_token(
     audience: str,
     username: str,
     lifetime: timedelta = settings.JWT_AUTH_SETTINGS["ACCESS_TOKEN_LIFETIME"],
-    jti: str = uuid4().hex,
     issuer: str = settings.JWT_AUTH_SETTINGS["ISSUER"],
     key: bytes = settings.JWT_AUTH_SETTINGS["PRIVATE_KEY"],
     algorithm: str = settings.JWT_AUTH_SETTINGS["ALGORITHM"],
 ):
+    jti = uuid4().hex
+
     payload = {
         "exp": (datetime.utcnow() + lifetime).timestamp(),
         "iss": issuer,
