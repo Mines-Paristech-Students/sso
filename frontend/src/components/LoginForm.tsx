@@ -1,84 +1,128 @@
 import axios from 'axios';
-import React, {FormEvent, SyntheticEvent} from 'react';
+import React, {FormEvent, useEffect, useState} from 'react';
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import {Redirect} from 'react-router-dom';
+import LoginFormAlert from "./LoginFormAlert";
 
+type LoginProps = {
+    endpoint: string,
+};
 
-interface LoginProps {
-    endpoint: string;
+export enum ErrorCode {
+    BAD_CREDENTIALS = "BAD_CREDENTIALS",
+    UNAUTHORIZED_AUDIENCE = "UNAUTHORIZED_AUDIENCE",
+    UNKNOWN_ERROR = "UNKNOWN_ERROR",
 }
 
-interface LoginState {
-    username: string;
-    password: string;
-    audience: string;
-}
+export default function LoginForm(props: LoginProps) {
+    const [alertErrorCode, setAlertErrorCode] = useState<null | ErrorCode>(null);
 
-export default class LoginForm extends React.Component<LoginProps, LoginState> {
-    constructor(props: LoginProps, context: LoginState) {
-        super(props, context);
+    // Form states.
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [audience, setAudience] = useState<string>("portail");
 
-        this.state = {
-            username: "",
-            password: "",
-            audience: "portail",
-        };
-
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    private handleSubmit(event: SyntheticEvent) {
+    function handleSubmit(event: FormEvent<any>) {
         event.preventDefault();
 
-        axios
-            .post(this.props.endpoint,
-                {
-                    username: this.state.username,
-                    password: this.state.password,
-                    audience: this.state.audience,
-                })
-            .then(value => console.log(value))
-            .catch(reason => console.log(reason));
+        axios.post(
+            props.endpoint,
+            {
+                username: username,
+                password: password,
+                audience: audience,
+            }
+        ).then(value => {
+            window.location = value.data.redirect;
+        }).catch(error => {
+            if (error.response && error.response.status === 401)
+                switch (error.response.data) {
+                    case ErrorCode.BAD_CREDENTIALS:
+                        setAlertErrorCode(ErrorCode.BAD_CREDENTIALS);
+                        break;
+                    case ErrorCode.UNAUTHORIZED_AUDIENCE:
+                        setAlertErrorCode(ErrorCode.UNAUTHORIZED_AUDIENCE);
+                        break;
+                    default:
+                        setAlertErrorCode(ErrorCode.UNKNOWN_ERROR);
+                        break;
+                }
+        })
     }
 
-    private handleChange(event: React.FormEvent) {
+    function handleChange(event: FormEvent<any>) {
         const target = event.target as HTMLInputElement;
         const value = target.value;
-        const name = target.name;
 
-        this.setState({
-            [name]: value
-        } as Pick<LoginState, keyof LoginState>);
+        switch (target.name) {
+            case "username":
+                setUsername(value);
+                break;
+            case "password":
+                setPassword(value);
+                break;
+            case "audience":
+                setAudience(value);
+                break;
+        }
+
+        // Clear the alert if there is one.
+        clearAlert();
     }
 
-    render() {
-        return (
-            <form className="login-form" onSubmit={this.handleSubmit}>
-                <label>
-                    Nom d’utilisateur<br/>
-                    <input name="username"
-                           type="text"
-                           value={this.state.username}
-                           onChange={this.handleChange}/>
-                </label><br/>
-                <label>
-                    Mot de passe<br/>
-                    <input name="password"
-                           type="password"
-                           value={this.state.password}
-                           onChange={this.handleChange}/>
-                </label><br/>
-                <label>
-                    Audience<br/>
-                    <select name="audience"
-                            value={this.state.audience}
-                            onChange={this.handleChange}>
+    function clearAlert() {
+        setAlertErrorCode(null);
+    }
+
+    return (
+        <>
+            <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="formUsername">
+                    <Form.Label>Nom d’utilisateur</Form.Label>
+                    <Form.Control type="text"
+                                  name="username"
+                                  value={username}
+                                  onChange={handleChange}
+                                  required
+                                  placeholder="Nom d’utilisateur"/>
+                </Form.Group>
+
+                <Form.Group controlId="formPassword">
+                    <Form.Label>Mot de passe</Form.Label>
+                    <Form.Control type="password"
+                                  name="password"
+                                  value={password}
+                                  onChange={handleChange}
+                                  required
+                                  placeholder="********"/>
+                </Form.Group>
+
+                <Form.Group controlId="formAudience">
+                    <Form.Label>
+                        Audience
+                    </Form.Label>
+                    <Form.Control as="select"
+                                  name="audience"
+                                  value={audience}
+                                  onChange={handleChange}
+                                  required>
                         <option value="portail">Portail</option>
                         <option value="rezal">Rézal</option>
-                    </select>
-                </label><br/>
+                    </Form.Control>
+                </Form.Group>
 
-                <input type="submit" value="Submit"/>
-            </form>
-        )
-    }
+                <Button variant="primary"
+                        type="submit">
+                    Submit
+                </Button>
+            </Form>
+
+            {
+                alertErrorCode &&
+                <LoginFormAlert error={alertErrorCode}
+                                clearAlert={clearAlert}/>
+            }
+        </>
+    )
 }

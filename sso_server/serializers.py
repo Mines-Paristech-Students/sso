@@ -20,15 +20,11 @@ class CreateTokenSerializer(serializers.Serializer):
         user = authenticate(username=data["username"], password=data["password"])
 
         if user is None or not user.is_active:
-            raise serializers.ValidationError(
-                "No active account found with the given credentials"
-            )
+            raise serializers.ValidationError("BAD_CREDENTIALS")
 
         # Check if the user is allowed to access the given audience.
         if not Access.objects.filter(user=user, audience=data["audience"]).exists():
-            raise serializers.ValidationError(
-                "This user is not allowed to access this audience."
-            )
+            raise serializers.ValidationError("UNAUTHORIZED_AUDIENCE")
 
         data["access"] = create_token_for_user(user, data["audience"])
 

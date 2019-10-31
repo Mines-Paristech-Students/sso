@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.http import HttpResponseRedirect
 from rest_framework import generics, status
 from rest_framework.response import Response
 
@@ -16,7 +15,14 @@ class LoginView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if (
+                "non_field_errors" in serializer.errors
+                and len(serializer.errors["non_field_errors"]) > 0
+            ):
+                return Response(
+                    serializer.errors["non_field_errors"][0],
+                    status=status.HTTP_401_UNAUTHORIZED,
+                )
 
         audience = serializer.validated_data["audience"]
         access = serializer.validated_data["access"]  # The JWT token.
@@ -26,7 +32,7 @@ class LoginView(generics.GenericAPIView):
         parameter = f"{settings.JWT_AUTH_SETTINGS['GET_PARAMETER']}={access}"
         redirect_url = f"{base_url}?{parameter}"
 
-        return HttpResponseRedirect(redirect_url)
+        return Response({"redirect": redirect_url}, status=status.HTTP_200_OK)
 
 
 class DecodeView(generics.GenericAPIView):
