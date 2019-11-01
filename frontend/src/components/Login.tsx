@@ -2,15 +2,12 @@ import axios from 'axios';
 import React, {FormEvent, useState} from 'react';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Image from "react-bootstrap/Image";
 import InputGroup from "react-bootstrap/InputGroup";
-import {useParams} from "react-router-dom"
+import {Link, useParams} from "react-router-dom"
 
 import LoginFormAlert from "./LoginFormAlert";
 import MainContainer from "./MainContainer";
-import logoMines from "./logo_mines.png"
 import Error404 from "./Error404";
 
 type LoginProps = {
@@ -24,6 +21,30 @@ export enum ErrorCode {
     UNKNOWN_ERROR = "UNKNOWN_ERROR",
 }
 
+// Dumb usernames which will be used to fill the email placeholder. Just for fun.
+const USERNAME_PLACEHOLDERS = [
+    "16bde",
+    "17bde",
+    "18bde",
+    "19bde",
+    "16bdl",
+    "17bdl",
+    "18bdl",
+    "19bdl",
+    "16bench",
+    "17bench",
+    "18bench",
+    "19bench",
+    "16peigne",
+    "17peigne",
+    "18peigne",
+    "19peigne",
+    "16picheur",
+    "17picheur",
+    "18picheur",
+    "19picheur",
+];
+
 export default function LoginForm(props: LoginProps) {
     // The audience GET parameter.
     let {audience} = useParams();
@@ -36,6 +57,7 @@ export default function LoginForm(props: LoginProps) {
     }
 
     // The form states.
+    const username_placeholder = USERNAME_PLACEHOLDERS[Math.floor(Math.random() * Math.floor(USERNAME_PLACEHOLDERS.length))];
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
@@ -105,50 +127,49 @@ export default function LoginForm(props: LoginProps) {
 
         return (
             <div className="LoginForm">
-                <Image src={logoMines} alt="Logo des Mines" rounded className="logoMines"/>
-
-                <h1>Connexion {renderAudienceName()}</h1>
-
                 <Form onSubmit={handleSubmit}>
-                    <Form.Group as={Col} xs={{span: 12}} md={{span: 4, offset: 4}} controlId="formUsername">
+                    <Form.Group as={Col} xs={{span: 12}} lg={{span: 6, offset: 3}} controlId="formUsername">
                         <Form.Label>Nom d’utilisateur</Form.Label>
                         <InputGroup>
                             <InputGroup.Prepend>
-                                <InputGroup.Text>🆔</InputGroup.Text>
+                                <InputGroup.Text><span role="img" aria-label="ID">🆔</span></InputGroup.Text>
                             </InputGroup.Prepend>
                             <Form.Control type="text"
                                           name="username"
                                           value={username}
                                           onChange={handleChange}
                                           required
-                                          title="Nom d’utilisateur"
                                           aria-label="Nom d’utilisateur"
-                                          placeholder="Nom d’utilisateur"/>
+                                          placeholder={username_placeholder}/>
                         </InputGroup>
                     </Form.Group>
 
-                    <Form.Group as={Col} xs={{span: 12}} md={{span: 4, offset: 4}} controlId="formPassword">
+                    <Form.Group as={Col} xs={{span: 12}} lg={{span: 6, offset: 3}} controlId="formPassword">
                         <Form.Label>Mot de passe</Form.Label>
                         <InputGroup>
                             <InputGroup.Prepend>
-                                <InputGroup.Text>🔑</InputGroup.Text>
+                                <InputGroup.Text><span role="img" aria-label="clé">🔑</span></InputGroup.Text>
                             </InputGroup.Prepend>
                             <Form.Control type="password"
                                           name="password"
                                           value={password}
                                           onChange={handleChange}
                                           required
-                                          title="Mot de passe"
                                           arial-label="Mot de passe"
                                           placeholder="Mot de passe"/>
                         </InputGroup>
                     </Form.Group>
 
-                    <Button variant="outline-dark"
+                    <Button className="submit-button"
+                            variant="outline-dark"
                             type="submit">
                         Connexion
                     </Button>
                 </Form>
+
+                <p>
+                    <Link to="/oubli">Mot de passe oublié ?</Link>
+                </p>
 
                 {
                     alertErrorCode &&
@@ -160,7 +181,7 @@ export default function LoginForm(props: LoginProps) {
     }
 
     return (
-        <MainContainer>
+        <MainContainer heading={<>Connexion {renderAudienceName()}</>}>
             {renderContent()}
         </MainContainer>
     )

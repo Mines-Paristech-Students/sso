@@ -1,7 +1,9 @@
 import React from 'react';
+import Image from "react-bootstrap/Image";
+import logoMines from "./logo_mines.png";
 
 type Props = {
-    title?: string,
+    heading?: any,
     children?: any,
 };
 
@@ -10,8 +12,11 @@ export default function MainContainer(props: Props) {
     return (
         <div className="MainContainer">
             {
-                props.title &&
-                <h1>{props.title}</h1>
+                props.heading &&
+                <header>
+                    <Image src={logoMines} alt="Logo des Mines" rounded className="logoMines"/>
+                    <h1>{props.heading}</h1>
+                </header>
             }
 
             <div className="content">
