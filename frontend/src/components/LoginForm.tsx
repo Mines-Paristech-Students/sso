@@ -1,9 +1,11 @@
 import axios from 'axios';
-import React, {FormEvent, useEffect, useState} from 'react';
+import React, {FormEvent, useState} from 'react';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import {Redirect} from 'react-router-dom';
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import LoginFormAlert from "./LoginFormAlert";
+import MainContainer from "./MainContainer";
 
 type LoginProps = {
     endpoint: string,
@@ -36,7 +38,7 @@ export default function LoginForm(props: LoginProps) {
         ).then(value => {
             window.location = value.data.redirect;
         }).catch(error => {
-            if (error.response && error.response.status === 401)
+            if (error.response && error.response.status === 401) {
                 switch (error.response.data) {
                     case ErrorCode.BAD_CREDENTIALS:
                         setAlertErrorCode(ErrorCode.BAD_CREDENTIALS);
@@ -48,6 +50,9 @@ export default function LoginForm(props: LoginProps) {
                         setAlertErrorCode(ErrorCode.UNKNOWN_ERROR);
                         break;
                 }
+            } else {
+                setAlertErrorCode(ErrorCode.UNKNOWN_ERROR);
+            }
         })
     }
 
@@ -75,54 +80,72 @@ export default function LoginForm(props: LoginProps) {
         setAlertErrorCode(null);
     }
 
+    function renderContent() {
+        return (
+            <>
+                <Form onSubmit={handleSubmit} className="LoginForm">
+                    <Form.Group as={Row} controlId="formUsername">
+                        <Form.Label column xs={{span: 12}} md={{span: 2, offset: 3}} className="form-label">
+                            Nom d’utilisateur :
+                        </Form.Label>
+                        <Col xs={{span: 12}} md={3}>
+                            <Form.Control type="text"
+                                          name="username"
+                                          value={username}
+                                          onChange={handleChange}
+                                          required
+                                          placeholder="Nom d’utilisateur"/>
+                        </Col>
+                    </Form.Group>
+
+                    <Form.Group as={Row} controlId="formPassword">
+                        <Form.Label column xs={{span: 12}} md={{span: 2, offset: 3}} className="form-label">
+                            Mot de passe :
+                        </Form.Label>
+                        <Col xs={{span: 12}} md={3}>
+                            <Form.Control type="password"
+                                          name="password"
+                                          value={password}
+                                          onChange={handleChange}
+                                          required
+                                          placeholder="********"/>
+                        </Col>
+                    </Form.Group>
+
+                    <Form.Group as={Row} controlId="formAudience">
+                        <Form.Label column xs={{span: 12}} md={{span: 2, offset: 3}} className="form-label">
+                            Audience :
+                        </Form.Label>
+                        <Col xs={{span: 12}} md={3}>
+                            <Form.Control as="select"
+                                          name="audience"
+                                          value={audience}
+                                          onChange={handleChange}
+                                          required>
+                                <option value="portail">Portail</option>
+                                <option value="rezal">Rézal</option>
+                            </Form.Control>
+                        </Col>
+                    </Form.Group>
+
+                    <Button variant="primary"
+                            type="submit">
+                        Se connecter
+                    </Button>
+                </Form>
+
+                {
+                    alertErrorCode &&
+                    <LoginFormAlert error={alertErrorCode}
+                                    clearAlert={clearAlert}/>
+                }
+            </>
+        )
+    }
+
     return (
-        <>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="formUsername">
-                    <Form.Label>Nom d’utilisateur</Form.Label>
-                    <Form.Control type="text"
-                                  name="username"
-                                  value={username}
-                                  onChange={handleChange}
-                                  required
-                                  placeholder="Nom d’utilisateur"/>
-                </Form.Group>
-
-                <Form.Group controlId="formPassword">
-                    <Form.Label>Mot de passe</Form.Label>
-                    <Form.Control type="password"
-                                  name="password"
-                                  value={password}
-                                  onChange={handleChange}
-                                  required
-                                  placeholder="********"/>
-                </Form.Group>
-
-                <Form.Group controlId="formAudience">
-                    <Form.Label>
-                        Audience
-                    </Form.Label>
-                    <Form.Control as="select"
-                                  name="audience"
-                                  value={audience}
-                                  onChange={handleChange}
-                                  required>
-                        <option value="portail">Portail</option>
-                        <option value="rezal">Rézal</option>
-                    </Form.Control>
-                </Form.Group>
-
-                <Button variant="primary"
-                        type="submit">
-                    Submit
-                </Button>
-            </Form>
-
-            {
-                alertErrorCode &&
-                <LoginFormAlert error={alertErrorCode}
-                                clearAlert={clearAlert}/>
-            }
-        </>
+        <MainContainer title={"Bienvenue !"}>
+            {renderContent()}
+        </MainContainer>
     )
 }
