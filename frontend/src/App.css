@@ -11,22 +11,90 @@
 .logoMines {
     margin-left: auto;
     margin-right: auto;
-    max-height: 120px;
     margin-bottom: 20px;
+
+    max-height: 80px;
 }
 
-.LoginForm {
+.LoginForm h1 {
+    color: lightslategray;
+
+    margin-top: 10px;
+    margin-bottom: 50px;
+
+    font-weight: lighter;
+    font-size: 38px;
+}
+
+.LoginForm h1 .audience-name {
+    color: darkslategray;
+    font-weight: normal;
+}
+
+.LoginForm form {
     padding: 10px;
+    font-size: 26px;
+}
+
+.LoginForm form input {
+    font-size: 26px;
+}
+
+.LoginForm form button {
+    font-size: 20px;
+}
+
+.LoginForm form label {
+    display: none;
 }
 
 .LoginForm .form-label {
     text-align: right;
 }
 
+.LoginFormAlert {
+    width: 30%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 1080px) {
+    .LoginForm h1 {
+        font-size: 32px;
+    }
+
+    .LoginForm form {
+        font-size: 20px;
+    }
+
+    .LoginForm form input {
+        font-size: 20px;
+    }
+
+    .LoginForm form button {
+        font-size: 14px;
+    }
+}
+
 @media (max-width: 768px) {
     .logoMines {
-        max-height: 100px;
         margin-bottom: 10px;
+    }
+
+    .LoginForm h1 {
+        font-size: 24px;
+    }
+
+    .LoginForm form {
+        font-size: 14px;
+    }
+
+    .LoginForm form input {
+        font-size: 14px;
+    }
+
+    .LoginForm form button {
+        font-size: 14px;
     }
 
     .LoginForm .form-label {

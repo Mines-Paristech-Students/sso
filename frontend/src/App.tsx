@@ -10,7 +10,7 @@ const App: React.FC = () => {
         <Router>
             <div className="App">
                 <Switch>
-                    <Route exact path="/">
+                    <Route path="/login/:audience/">
                         <LoginForm endpoint="http://localhost:8100/api/login/"/>
                     </Route>
                     <Route path="*">

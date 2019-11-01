@@ -15,8 +15,10 @@ export default function LoginFormAlert(props: Props) {
                 return "Identifiants incorrects.";
             case ErrorCode.UNAUTHORIZED_AUDIENCE:
                 return "Vous ne pouvez pas accéder à ce site.";
+            case ErrorCode.INVALID_AUDIENCE:
+                return "Ce site ne peut pas se connecter via ce serveur.";
             default:
-                return "Erreur "
+                return "Erreur non définie. Veuillez contacter un(e) administrateur(trice)."
         }
     }
 
@@ -24,9 +26,10 @@ export default function LoginFormAlert(props: Props) {
         return <></>
     } else {
         return (
-            <Alert variant="warning"
+            <Alert variant="danger"
                    onClose={props.clearAlert}
-                   dismissible>
+                   dismissible
+                   className="LoginFormAlert">
                 {getAlertContent()}
             </Alert>
         );
