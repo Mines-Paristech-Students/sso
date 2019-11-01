@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Serveur SSO MinT",
+  "name": "Serveur de connexion des élèves de MINES ParisTech",
   "icons": [
     {
       "src": "favicon.ico",

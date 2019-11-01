@@ -4,8 +4,11 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Image from "react-bootstrap/Image";
 import LoginFormAlert from "./LoginFormAlert";
 import MainContainer from "./MainContainer";
+
+import logoMines from "./logo_mines.png"
 
 type LoginProps = {
     endpoint: string,
@@ -83,6 +86,8 @@ export default function LoginForm(props: LoginProps) {
     function renderContent() {
         return (
             <>
+                <Image src={logoMines} alt="Logo des Mines" rounded className="logoMines"/>
+
                 <Form onSubmit={handleSubmit} className="LoginForm">
                     <Form.Group as={Row} controlId="formUsername">
                         <Form.Label column xs={{span: 12}} md={{span: 2, offset: 3}} className="form-label">
