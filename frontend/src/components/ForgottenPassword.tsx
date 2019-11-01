@@ -6,27 +6,33 @@ import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
 
 import MainContainer from "./MainContainer";
+import {Link} from "react-router-dom";
+import FormAlert from "./FormAlert";
+import {getEmailPlaceholder} from "./placeholders";
+
+export enum ForgottenPasswordErrorCode {
+    UNKNOWN_EMAIL = "UNKNOWN_EMAIL",
+}
 
 type Props = {
     endpoint: string,
 };
 
-// Dumb emails which will be used to fill the email placeholder. Just for fun.
-const EMAIL_PLACEHOLDERS = [
-    "bde@mines-paristech.fr",
-    "bdl@mines-paristech.fr",
-    "bencheur@mines-paristech.fr",
-    "matmaz@mines-paristech.fr",
-    "peigne@mines-paristech.fr",
-    "picheur@mines-paristech.fr",
-    "zaza@mines-paristech.fr"
-];
-
 export default function ForgottenPassword(props: Props) {
-    const email_placeholder = EMAIL_PLACEHOLDERS[Math.floor(Math.random() * Math.floor(EMAIL_PLACEHOLDERS.length))];
+    const emailPlaceholder = getEmailPlaceholder();
+
+    // The alert message at the bottom.
+    const [alertErrorCode, setAlertErrorCode] = useState<null | ForgottenPasswordErrorCode>(null);
+
+    function clearAlert() {
+        setAlertErrorCode(null);
+    }
 
     // The form states.
     const [email, setEmail] = useState<string>("");
+
+    // True iff the backend indicated the new password email was sent.
+    const [emailSent, setEmailSent] = useState<boolean>(false);
 
     function handleChange(event: FormEvent<any>) {
         const target = event.target as HTMLInputElement;
@@ -35,6 +41,9 @@ export default function ForgottenPassword(props: Props) {
         if (target.name === "email") {
             setEmail(value);
         }
+
+        // Remove the alert.
+        clearAlert();
     }
 
     function handleSubmit(event: FormEvent<any>) {
@@ -46,19 +55,32 @@ export default function ForgottenPassword(props: Props) {
                 email: email,
             }
         ).then(value => {
+            setEmailSent(true);
             console.log(value)
         }).catch(error => {
+            setAlertErrorCode(ForgottenPasswordErrorCode.UNKNOWN_EMAIL);
             console.log(error)
-        })
+        });
     }
 
     function renderContent() {
+        const paragraph = emailSent
+            ? <p>
+                Nous t’avons envoyé un mail (il est peut-être dans ton dossier « Spam »).<br/>
+                Si tu ne l’as pas reçu d’ici quelques minutes, <Link to="/oubli"
+                                                                     onClick={() => window.location.reload()}>réessaye</Link> ou <a
+                href="mailto:rezal@mines-paristech.fr">contacte-nous</a>.
+            </p>
+            : <p>
+                Donne-nous ton adresse mail <code>@mines-paristech.fr</code>.<br/>
+                Si on te connaît, tu recevras un lien pour changer ton mot de passe.
+            </p>;
+
+        const buttonText = emailSent ? "Demande envoyée" : "Demander un nouveau mot de passe";
+
         return (
-            <div className="NewPasswordForm">
-                <p>
-                    Donne-nous ton adresse mail <code>mines-paristech.fr</code>.<br/>
-                    Si on te connaît, tu recevras un lien pour changer ton mot de passe.
-                </p>
+            <div className="ForgottenPasswordForm">
+                {paragraph}
 
                 <Form onSubmit={handleSubmit}>
                     <Form.Group as={Col} xs={{span: 12}} lg={{span: 6, offset: 3}} controlId="formEmail">
@@ -72,17 +94,25 @@ export default function ForgottenPassword(props: Props) {
                                           value={email}
                                           onChange={handleChange}
                                           required
+                                          disabled={emailSent}
                                           aria-label="Adresse mail"
-                                          placeholder={email_placeholder}/>
+                                          placeholder={emailPlaceholder}/>
                         </InputGroup>
                     </Form.Group>
 
                     <Button className="submit-button"
                             variant="outline-dark"
+                            disabled={emailSent}
                             type="submit">
-                        Demander un nouveau mot de passe
+                        {buttonText}
                     </Button>
                 </Form>
+
+                {
+                    alertErrorCode &&
+                    <FormAlert forgottenPasswordError={alertErrorCode}
+                               clearAlert={clearAlert}/>
+                }
             </div>
         )
     }

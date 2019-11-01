@@ -6,59 +6,38 @@ import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
 import {Link, useParams} from "react-router-dom"
 
-import LoginFormAlert from "./LoginFormAlert";
+import FormAlert from "./FormAlert";
 import MainContainer from "./MainContainer";
 import Error404 from "./Error404";
+import {getUsernamePlaceholder} from "./placeholders";
 
-type LoginProps = {
-    endpoint: string,
-};
-
-export enum ErrorCode {
+export enum LoginErrorCode {
     BAD_CREDENTIALS = "BAD_CREDENTIALS",
     UNAUTHORIZED_AUDIENCE = "UNAUTHORIZED_AUDIENCE",
     INVALID_AUDIENCE = "INVALID_AUDIENCE",
     UNKNOWN_ERROR = "UNKNOWN_ERROR",
 }
 
-// Dumb usernames which will be used to fill the email placeholder. Just for fun.
-const USERNAME_PLACEHOLDERS = [
-    "16bde",
-    "17bde",
-    "18bde",
-    "19bde",
-    "16bdl",
-    "17bdl",
-    "18bdl",
-    "19bdl",
-    "16bench",
-    "17bench",
-    "18bench",
-    "19bench",
-    "16peigne",
-    "17peigne",
-    "18peigne",
-    "19peigne",
-    "16picheur",
-    "17picheur",
-    "18picheur",
-    "19picheur",
-];
+type LoginProps = {
+    endpoint: string,
+};
 
-export default function LoginForm(props: LoginProps) {
+export default function Login(props: LoginProps) {
     // The audience GET parameter.
     let {audience} = useParams();
 
     // The alert message at the bottom.
-    const [alertErrorCode, setAlertErrorCode] = useState<null | ErrorCode>(null);
+    const [alertErrorCode, setAlertErrorCode] = useState<null | LoginErrorCode>(null);
 
     function clearAlert() {
         setAlertErrorCode(null);
     }
 
     // The form states.
-    const username_placeholder = USERNAME_PLACEHOLDERS[Math.floor(Math.random() * Math.floor(USERNAME_PLACEHOLDERS.length))];
+    const usernamePlaceholder = getUsernamePlaceholder();
     const [username, setUsername] = useState<string>("");
+
+    const passwordPlaceholder = "Mot de passe";
     const [password, setPassword] = useState<string>("");
 
     function handleChange(event: FormEvent<any>) {
@@ -93,18 +72,18 @@ export default function LoginForm(props: LoginProps) {
         }).catch(error => {
             if (error.response && error.response.status === 401) {
                 switch (error.response.data) {
-                    case ErrorCode.BAD_CREDENTIALS:
-                        setAlertErrorCode(ErrorCode.BAD_CREDENTIALS);
+                    case LoginErrorCode.BAD_CREDENTIALS:
+                        setAlertErrorCode(LoginErrorCode.BAD_CREDENTIALS);
                         break;
-                    case ErrorCode.UNAUTHORIZED_AUDIENCE:
-                        setAlertErrorCode(ErrorCode.UNAUTHORIZED_AUDIENCE);
+                    case LoginErrorCode.UNAUTHORIZED_AUDIENCE:
+                        setAlertErrorCode(LoginErrorCode.UNAUTHORIZED_AUDIENCE);
                         break;
                     default:
-                        setAlertErrorCode(ErrorCode.UNKNOWN_ERROR);
+                        setAlertErrorCode(LoginErrorCode.UNKNOWN_ERROR);
                         break;
                 }
             } else {
-                setAlertErrorCode(ErrorCode.UNKNOWN_ERROR);
+                setAlertErrorCode(LoginErrorCode.UNKNOWN_ERROR);
             }
         })
     }
@@ -140,7 +119,7 @@ export default function LoginForm(props: LoginProps) {
                                           onChange={handleChange}
                                           required
                                           aria-label="Nom d’utilisateur"
-                                          placeholder={username_placeholder}/>
+                                          placeholder={usernamePlaceholder}/>
                         </InputGroup>
                     </Form.Group>
 
@@ -156,7 +135,7 @@ export default function LoginForm(props: LoginProps) {
                                           onChange={handleChange}
                                           required
                                           arial-label="Mot de passe"
-                                          placeholder="Mot de passe"/>
+                                          placeholder={passwordPlaceholder}/>
                         </InputGroup>
                     </Form.Group>
 
@@ -173,8 +152,8 @@ export default function LoginForm(props: LoginProps) {
 
                 {
                     alertErrorCode &&
-                    <LoginFormAlert error={alertErrorCode}
-                                    clearAlert={clearAlert}/>
+                    <FormAlert loginError={alertErrorCode}
+                               clearAlert={clearAlert}/>
                 }
             </div>
         )

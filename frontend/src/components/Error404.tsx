@@ -1,12 +1,13 @@
 import React from 'react';
+import MainContainer from "./MainContainer";
+import {Link} from "react-router-dom";
 
 export default function Error404() {
     return (
-        <>
-            <h1>404.</h1>
+        <MainContainer heading={"404."}>
             <p>
-                Have you tried /admin/?
+                T’as essayé <Link to="/admin/">/admin/</Link> ?
             </p>
-        </>
+        </MainContainer>
     );
 }

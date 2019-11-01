@@ -55,8 +55,9 @@ header h1 .audience-name {
     text-align: right;
 }
 
-.LoginFormAlert {
-    width: 30%;
+.FormAlert {
+    width: 40%;
+    margin-top: 50px;
     margin-left: auto;
     margin-right: auto;
 }
