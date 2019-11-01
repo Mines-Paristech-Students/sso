@@ -6,3 +6,4 @@ node_modules/
 sso_server/migrations/
 
 *.pyc
+.env
