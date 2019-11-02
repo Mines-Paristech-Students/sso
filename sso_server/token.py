@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from uuid import uuid4
 
+import jwt
 from django.conf import settings
 from django.contrib.auth.models import User
-import jwt
 
 from sso_server.models import Access
 
