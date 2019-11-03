@@ -1,7 +1,9 @@
 from datetime import datetime, timezone
 
-from .utils import BaseTestCase
+from django.contrib.auth import authenticate
+
 from sso_server.models import PasswordRecovery
+from .utils import BaseTestCase
 
 
 class TestLogin(BaseTestCase):
@@ -119,11 +121,65 @@ class TestRequestPasswordRecovery(BaseTestCase):
         self.assertEqual(1, PasswordRecovery.objects.count())
 
         password_recovery = PasswordRecovery.objects.last()
-        self.assertEqual(res.data["id"], str(password_recovery.id))
+        self.assertEqual(res.data["token"], str(password_recovery.id))
         self.assertEqual(res.data["email"], password_recovery.user.email)
         self.assertEqual(
             datetime.strptime(res.data["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ")
             .replace(tzinfo=timezone.utc)
             .timestamp(),
             password_recovery.created_at.timestamp(),
+        )
+
+
+class TestRecoverPassword(BaseTestCase):
+    endpoint = "/password/recover/set_password/"
+    request_endpoint = "/password/recover/request/"
+
+    def get_token(self):
+        payload = {"email": "17admin@mpt.fr"}
+        return self.post(self.request_endpoint, payload).data["token"]
+
+    def test_no_other_method_than_post(self):
+        for method in (self.get, self.patch, self.put, self.delete):
+            method(self.endpoint)
+            self.assertStatusCode(405)
+
+    def test_incomplete_payload(self):
+        for payload in [
+            {},
+            {"token": "c8d9e171-2795-4eee-9ad5-ee3c71065f13"},
+            {"password": "A password which should be more than twelve characters."},
+        ]:
+            self.post(self.endpoint, payload)
+            self.assertStatusCode(400)
+
+    def test_bad_token(self):
+        for payload in [
+            {
+                "token": "This is definitely not an UUID.",
+                "password": "A password which should be more than twelve characters.",
+            },
+            {"token": "c8d9e171-2795-4eee-9ad5-ee3c71065f13", "password": "password"},
+        ]:
+            self.post(self.endpoint, payload)
+            self.assertStatusCode(400)
+            self.assertResponseDataEqual(
+                {"error": {"type": "INVALID_TOKEN", "detail": ""}}
+            )
+
+    def test_weak_password(self):
+        payload = {"token": self.get_token(), "password": "short"}
+        self.post(self.endpoint, payload)
+        self.assertStatusCode(400)
+        self.assertResponseDataEqual({"error": {"type": "WEAK_PASSWORD", "detail": ""}})
+        self.assertIsNotNone(authenticate(username="17admin", password="password"))
+
+    def test_can_set_password(self):
+        payload = {"token": self.get_token(), "password": "mynewpasswordislong"}
+        self.post(self.endpoint, payload)
+        self.assertStatusCode(200)
+
+        self.assertIsNone(authenticate(username="17admin", password="password"))
+        self.assertIsNotNone(
+            authenticate(username="17admin", password="mynewpasswordislong")
         )

@@ -16,19 +16,34 @@ from sso_server.serializers import (
 class LoginView(views.APIView):
     """
     Create a JWT token and set it as a cookie.
+    Only accepts the POST method.
 
     Request:
         {
-            "username": "username",
-            "password": "password",
-            "audience": "audience"
+            "username": "",
+            "password": "",
+            "audience": ""
         }
 
-    Return:
-         * INVALID_CREDENTIALS if the password does not match.
-         * INVALID_AUDIENCE if the user is not allowed to access the audience.
-         * UNKNOWN_ERROR for all the other errors (often when a field is missing).
-         * {"redirect": "https://…"} if the login is successful.
+    Errors:
+        Return 401 and:
+        {
+            "error": {
+                "type": "",
+                "detail": ""
+            }
+        }
+
+        The type of the error can be:
+            * INVALID_CREDENTIALS if username or password are missing or cannot authenticate an user.
+            * INVALID_AUDIENCE if audience is missing or the user is not allowed to access the audience.
+            * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
+
+    Success:
+        Return 200 and:
+         {
+            "redirect": "https://…"
+         }
     """
 
     permission_classes = ()
@@ -96,9 +111,26 @@ class RequestPasswordRecoveryView(views.APIView):
             "email": "email"
         }
 
-    Return:
-        * INVALID_EMAIL: if the email does not appear in the database (including if it is ill-formatted).
-        * UNKNOWN_ERROR.
+    Errors:
+        Return 400 and:
+        {
+            "error": {
+                "type": "",
+                "detail": ""
+            }
+        }
+
+        The type of the error can be:
+            * INVALID_EMAIL: if email is missing or does not appear in the database (including if it is ill-formatted).
+            * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
+
+    Success:
+        Return 200 and the representation of the PasswordRecovery object:
+             {
+                "token": "",
+                "created_at": "",
+                "email": ""
+             }
     """
 
     permission_classes = ()
@@ -150,54 +182,46 @@ class RecoverPasswordView(views.APIView):
             "password": "new_password"
         }
 
-    Return:
-         * WEAK_PASSWORD if the password is too weak.
-         * INVALID_TOKEN if the token does not exist in the database.
-         * TOKEN_EXPIRED if the token is expired.
-         * UNKNOWN_ERROR for all the other errors.
-         * PASSWORD_CHANGED if the password has been successfully changed.
+    Errors:
+        Return 400 and:
+        {
+            "error": {
+                "type": "",
+                "detail": ""
+            }
+        }
+
+        The type of the error can be:
+            * WEAK_PASSWORD if the password is too weak.
+            * INVALID_TOKEN if the token does not exist in the database or has expired.
+            * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
+
+    Success:
+         Return 200 and "".
     """
 
     permission_classes = ()
     authentication_classes = ()
-
-    WEAK_PASSWORD_ERROR = Response(
-        {"error": {"type": "WEAK_PASSWORD", "detail": ""}},
-        status=status.HTTP_400_BAD_REQUEST,
-    )
-    INVALID_TOKEN_ERROR = Response(
-        {"error": {"type": "INVALID_TOKEN", "detail": ""}},
-        status=status.HTTP_400_BAD_REQUEST,
-    )
-    TOKEN_EXPIRED_ERROR = Response(
-        {"error": {"type": "TOKEN_EXPIRED", "detail": ""}},
-        status=status.HTTP_400_BAD_REQUEST,
-    )
-    UNKNOWN_ERROR = Response(
-        {"error": {"type": "UNKNOWN_ERROR", "detail": ""}},
-        status=status.HTTP_400_BAD_REQUEST,
-    )
-    PASSWORD_CHANGED = Response(
-        {"result": "PASSWORD_CHANGED"}, status=status.HTTP_200_OK
-    )
 
     def post(self, request, *args, **kwargs):
         serializer = RecoverPasswordSerializer(data=request.data)
 
         if not serializer.is_valid():
             if "token" in serializer.errors:
-                if serializer.errors["token"][0] in (
-                    "Must be a valid UUID.",
-                    "INVALID_TOKEN",
-                ):
-                    return self.INVALID_TOKEN_ERROR
-                elif serializer.errors["token"][0] in ("TOKEN_EXPIRED",):
-                    return self.TOKEN_EXPIRED_ERROR
+                return Response(
+                    {"error": {"type": "INVALID_TOKEN", "detail": ""}},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             elif "password" in serializer.errors:
-                if serializer.errors["password"][0] in ("WEAK_PASSWORD",):
-                    return self.WEAK_PASSWORD_ERROR
+                return Response(
+                    {"error": {"type": "WEAK_PASSWORD", "detail": ""}},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
-            return self.UNKNOWN_ERROR
+            return Response(
+                {"error": {"type": "UNKNOWN_ERROR", "detail": serializer.errors}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Get the user, change their password.
         password_recovery = PasswordRecovery.objects.get(
@@ -210,4 +234,4 @@ class RecoverPasswordView(views.APIView):
         password_recovery.used = True
         password_recovery.save()
 
-        return self.PASSWORD_CHANGED
+        return Response("", status=status.HTTP_200_OK)

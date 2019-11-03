@@ -1,6 +1,5 @@
 from django.conf import settings
-from django.contrib.auth import authenticate
-from django.contrib.auth import password_validation
+from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 
@@ -56,6 +55,9 @@ class PasswordRecoverySerializer(serializers.ModelSerializer):
 
         data["email"] = data["user"]
         del data["user"]
+
+        data["token"] = data["id"]
+        del data["id"]
 
         return data
 
