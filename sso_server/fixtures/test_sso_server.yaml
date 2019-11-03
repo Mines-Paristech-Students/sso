@@ -1,0 +1,43 @@
+- model: sso_server.user
+  pk: 1
+  fields:
+    username: 17admin
+    email: 17admin@mpt.fr
+
+- model: sso_server.access
+  pk: 1
+  fields:
+    user: 1
+    audience: "rezal"
+
+- model: sso_server.access
+  pk: 2
+  fields:
+    user: 1
+    audience: "portail"
+
+
+- model: sso_server.user
+  pk: 2
+  fields:
+    username: 17portail
+    email: 17portail@mpt.fr
+
+- model: sso_server.access
+  pk: 3
+  fields:
+    user: 2
+    audience: "portail"
+
+
+- model: sso_server.user
+  pk: 3
+  fields:
+    username: 17rezal
+    email: 17rezal@mpt.fr
+
+- model: sso_server.access
+  pk: 4
+  fields:
+    user: 3
+    audience: "rezal"

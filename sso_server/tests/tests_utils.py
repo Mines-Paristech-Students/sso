@@ -1,6 +1,67 @@
 from datetime import timedelta
 
+from rest_framework.test import APITestCase
+
 from sso_server.token import create_token
+
+
+class BaseTestCase(APITestCase):
+    """
+        This test base provides convenient `get`, `post`, etc. shortcut methods to the corresponding
+        `self.client.xxx` methods.
+        When using these methods, the URLs must be shortened from `/api/v1/some/endpoint/` to `/some/endpoint/`.
+    """
+
+    api_base = "/api/v1"
+
+    def __init__(self, *args, **kwargs):
+        super(BaseTestCase, self).__init__(*args, **kwargs)
+        self._res = None
+
+    def _prepare_message(self, user_msg):
+        msg = ""
+
+        if hasattr(self._res, "url"):
+            msg += f"URL: {self._res.url}\n"
+        if hasattr(self._res, "content"):
+            msg += f"Content: {self._res.content}\n"
+
+        return msg + f"\n{user_msg}"
+
+    def assertStatusCode(self, status_code, user_msg=""):
+        self.assertIsNotNone(self._res, msg="No request was made.")
+
+        self.assertEqual(
+            self._res.status_code, status_code, msg=self._prepare_message(user_msg)
+        )
+
+    def assertStatusCodeIn(self, status_codes, user_msg=""):
+        self.assertIsNotNone(self._res, msg="No request was made.")
+
+        self.assertIn(
+            self._res.status_code, status_codes, msg=self._prepare_message(user_msg)
+        )
+
+    def get(self, url, data=None):
+        self._res = self.client.get(self.api_base + url, data)
+
+    def post(self, url, data=None, format="json"):
+        self._res = self.client.post(self.api_base + url, data, format=format)
+
+    def patch(self, url, data=None, format="json"):
+        self._res = self.client.patch(self.api_base + url, data, format=format)
+
+    def put(self, url, data=None, format="json"):
+        self._res = self.client.put(self.api_base + url, data, format=format)
+
+    def delete(self, url):
+        self._res = self.client.delete(self.api_base + url)
+
+    def head(self, url, data=None):
+        self._res = self.client.head(self.api_base + url, data)
+
+    def options(self, url, data=None):
+        self._res = self.client.options(self.api_base + url, data)
 
 
 def mess(s: str) -> str:
