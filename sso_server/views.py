@@ -1,5 +1,5 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import views, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -90,14 +90,16 @@ class RequestPasswordRecoveryView(views.APIView):
         }
 
     Return:
-        * UNKNOWN_EMAIL: if the email does not appear in the database.
+        * INVALID_EMAIL: if the email does not appear in the database (including if it is ill-formatted).
         * UNKNOWN_ERROR.
     """
 
     permission_classes = ()
     authentication_classes = ()
 
-    INVALID_EMAIL_ERROR = Response("INVALID_EMAIL", status=status.HTTP_400_BAD_REQUEST)
+    INVALID_EMAIL_ERROR = Response(
+        {"error": "INVALID_EMAIL"}, status=status.HTTP_400_BAD_REQUEST
+    )
 
     def post(self, request, *args, **kwargs):
         # First, retrieve the user linked to the email address.
@@ -147,27 +149,35 @@ class RecoverPasswordView(views.APIView):
     permission_classes = ()
     authentication_classes = ()
 
-    INVALID_TOKEN_ERROR = Response("INVALID_TOKEN", status=status.HTTP_400_BAD_REQUEST)
-    TOKEN_EXPIRED_ERROR = Response("TOKEN_EXPIRED", status=status.HTTP_400_BAD_REQUEST)
-    UNKNOWN_ERROR = Response("UNKNOWON_ERROR", status=status.HTTP_400_BAD_REQUEST)
-    PASSWORD_CHANGED = Response("PASSWORD_CHANGED", status=status.HTTP_200_OK)
+    INVALID_TOKEN_ERROR = Response(
+        {"error": "INVALID_TOKEN"}, status=status.HTTP_400_BAD_REQUEST
+    )
+    TOKEN_EXPIRED_ERROR = Response(
+        {"error": "TOKEN_EXPIRED"}, status=status.HTTP_400_BAD_REQUEST
+    )
+    UNKNOWN_ERROR = Response(
+        {"error": "UNKNOWN_ERROR"}, status=status.HTTP_400_BAD_REQUEST
+    )
+    PASSWORD_CHANGED = Response(
+        {"result": "PASSWORD_CHANGED"}, status=status.HTTP_200_OK
+    )
 
     def post(self, request, *args, **kwargs):
         serializer = RecoverPasswordSerializer(data=request.data)
 
         if not serializer.is_valid():
-            if "id" in serializer.errors:
-                if serializer.errors["id"][0] in (
+            if "token" in serializer.errors:
+                if serializer.errors["token"][0] in (
                     "Must be a valid UUID.",
                     "INVALID_TOKEN",
                 ):
                     return self.INVALID_TOKEN_ERROR
-                elif serializer.errors["id"][0] in ("TOKEN_EXPIRED",):
+                elif serializer.errors["token"][0] in ("TOKEN_EXPIRED",):
                     return self.TOKEN_EXPIRED_ERROR
 
             return self.UNKNOWN_ERROR
 
-        # Get the user.
+        # Get the user, change their password.
         password_recovery = PasswordRecovery.objects.get(
             id=serializer.validated_data["token"]
         )

@@ -10,19 +10,20 @@ import {Link} from "react-router-dom";
 import FormAlert from "./FormAlert";
 import {getEmailPlaceholder} from "./placeholders";
 
-export enum ForgottenPasswordErrorCode {
-    UNKNOWN_EMAIL = "UNKNOWN_EMAIL",
+export enum RequestPasswordRecoveryErrorCode {
+    INVALID_EMAIL = "INVALID_EMAIL",
+    UNKNOWN_ERROR = "UNKNOWN_ERROR",
 }
 
 type Props = {
     endpoint: string,
 };
 
-export default function ForgottenPassword(props: Props) {
+export default function RequestPasswordRecovery(props: Props) {
     const emailPlaceholder = getEmailPlaceholder();
 
     // The alert message at the bottom.
-    const [alertErrorCode, setAlertErrorCode] = useState<null | ForgottenPasswordErrorCode>(null);
+    const [alertErrorCode, setAlertErrorCode] = useState<null | RequestPasswordRecoveryErrorCode>(null);
 
     function clearAlert() {
         setAlertErrorCode(null);
@@ -56,10 +57,13 @@ export default function ForgottenPassword(props: Props) {
             }
         ).then(value => {
             setEmailSent(true);
-            console.log(value)
         }).catch(error => {
-            setAlertErrorCode(ForgottenPasswordErrorCode.UNKNOWN_EMAIL);
-            console.log(error)
+            if (error.response && error.response.status === 400 &&
+                error.response.data.error === RequestPasswordRecoveryErrorCode.INVALID_EMAIL) {
+                setAlertErrorCode(RequestPasswordRecoveryErrorCode.INVALID_EMAIL);
+            } else {
+                setAlertErrorCode(RequestPasswordRecoveryErrorCode.UNKNOWN_ERROR);
+            }
         });
     }
 
@@ -110,7 +114,7 @@ export default function ForgottenPassword(props: Props) {
 
                 {
                     alertErrorCode &&
-                    <FormAlert forgottenPasswordError={alertErrorCode}
+                    <FormAlert requestPasswordRecoveryError={alertErrorCode}
                                clearAlert={clearAlert}/>
                 }
             </div>

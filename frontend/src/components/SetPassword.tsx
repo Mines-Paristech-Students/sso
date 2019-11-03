@@ -9,21 +9,23 @@ import MainContainer from "./MainContainer";
 import {useParams} from "react-router";
 import FormAlert from "./FormAlert";
 
-export enum NewPasswordErrorCode {
+export enum SetPasswordErrorCode {
     WEAK_PASSWORD = "WEAK_PASSWORD",
     INVALID_TOKEN = "INVALID_TOKEN",
+    TOKEN_EXPIRED = "TOKEN_EXPIRED",
+    UNKNOWN_ERROR = "UNKNOWN_ERROR",
 }
 
 type Props = {
     endpoint: string,
 };
 
-export default function NewPassword(props: Props) {
+export default function SetPassword(props: Props) {
     // The token GET parameter.
     let {token} = useParams();
 
     // The alert message at the bottom.
-    const [alertErrorCode, setAlertErrorCode] = useState<null | NewPasswordErrorCode>(null);
+    const [alertErrorCode, setAlertErrorCode] = useState<null | SetPasswordErrorCode>(null);
 
     function clearAlert() {
         setAlertErrorCode(null);
@@ -55,13 +57,27 @@ export default function NewPassword(props: Props) {
             {
                 token: token,
                 password: password,
-            }
+            },
+            {responseType: "json"}
         ).then(value => {
             setPasswordChanged(true);
-            console.log(value)
         }).catch(error => {
-            setAlertErrorCode(NewPasswordErrorCode.WEAK_PASSWORD);
-            console.log(error)
+            console.log(error.response.data);
+            if (error.response && error.response.status === 400) {
+                switch (error.response.data.error) {
+                    case SetPasswordErrorCode.WEAK_PASSWORD:
+                        setAlertErrorCode(SetPasswordErrorCode.WEAK_PASSWORD);
+                        break;
+                    case SetPasswordErrorCode.TOKEN_EXPIRED:
+                        setAlertErrorCode(SetPasswordErrorCode.TOKEN_EXPIRED);
+                        break;
+                    case SetPasswordErrorCode.INVALID_TOKEN:
+                        setAlertErrorCode(SetPasswordErrorCode.INVALID_TOKEN);
+                        break;
+                }
+            } else {
+                setAlertErrorCode(SetPasswordErrorCode.UNKNOWN_ERROR);
+            }
         })
     }
 
@@ -109,7 +125,7 @@ export default function NewPassword(props: Props) {
 
                 {
                     alertErrorCode &&
-                    <FormAlert newPasswordError={alertErrorCode}
+                    <FormAlert setPasswordError={alertErrorCode}
                                clearAlert={clearAlert}/>
                 }
             </div>

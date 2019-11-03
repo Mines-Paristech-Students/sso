@@ -4,11 +4,10 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
-import {Link, useParams} from "react-router-dom"
+import {Link, useParams, Redirect} from "react-router-dom"
 
 import FormAlert from "./FormAlert";
 import MainContainer from "./MainContainer";
-import Error404 from "./Error404";
 import {getUsernamePlaceholder} from "./placeholders";
 
 export enum LoginErrorCode {
@@ -101,7 +100,7 @@ export default function Login(props: LoginProps) {
 
     function renderContent() {
         if (audience !== "portail" && audience !== "rezal") {
-            return <Error404/>;
+            return <Redirect to="/404"/>;
         }
 
         return (

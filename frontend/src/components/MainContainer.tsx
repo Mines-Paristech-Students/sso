@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from "react-bootstrap/Image";
-import logoMines from "./logo_mines.png";
+import logoMines from "../static/logo_mines.png";
 
 type Props = {
     heading?: any,

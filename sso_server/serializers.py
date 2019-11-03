@@ -64,7 +64,7 @@ class RequestPasswordRecoverySerializer(serializers.Serializer):
 
 class RecoverPasswordSerializer(serializers.Serializer):
     """
-    This serializer gets a password and an id. Data will be validated iff the id matches
+    This serializer gets a password and a token. Data will be validated iff the token matches
     a valid PasswordRecovery id.
     """
 

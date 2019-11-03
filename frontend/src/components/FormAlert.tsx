@@ -2,14 +2,14 @@ import React from 'react';
 
 import {LoginErrorCode} from './Login'
 import Alert from "react-bootstrap/Alert";
-import {ForgottenPasswordErrorCode} from "./ForgottenPassword";
-import {NewPasswordErrorCode} from "./NewPassword";
+import {RequestPasswordRecoveryErrorCode} from "./RequestPasswordRecovery";
+import {SetPasswordErrorCode} from "./SetPassword";
 import {Link} from "react-router-dom";
 
 type Props = {
     loginError?: LoginErrorCode,
-    forgottenPasswordError?: ForgottenPasswordErrorCode,
-    newPasswordError?: NewPasswordErrorCode,
+    requestPasswordRecoveryError?: RequestPasswordRecoveryErrorCode,
+    setPasswordError?: SetPasswordErrorCode,
     clearAlert: () => void
 };
 
@@ -26,18 +26,20 @@ export default function FormAlert(props: Props) {
                 default:
                     return "Erreur non définie. Contacte un(e) administrateur(trice)."
             }
-        } else if (props.forgottenPasswordError) {
-            switch (props.forgottenPasswordError) {
-                case ForgottenPasswordErrorCode.UNKNOWN_EMAIL:
+        } else if (props.requestPasswordRecoveryError) {
+            switch (props.requestPasswordRecoveryError) {
+                case RequestPasswordRecoveryErrorCode.INVALID_EMAIL:
                     return "Adresse mail inconnue.";
                 default:
                     return "Erreur non définie. Contacte un(e) administrateur(trice)."
             }
-        } else if (props.newPasswordError) {
-            switch (props.newPasswordError) {
-                case NewPasswordErrorCode.WEAK_PASSWORD:
+        } else if (props.setPasswordError) {
+            switch (props.setPasswordError) {
+                case SetPasswordErrorCode.WEAK_PASSWORD:
                     return "Ce mot de passe est tout pourri, choisis-en un autre ! (stp)";
-                case NewPasswordErrorCode.INVALID_TOKEN:
+                case SetPasswordErrorCode.INVALID_TOKEN:
+                    return <>Ton lien a expiré. <Link to="oubli/">Demandes-en un autre.</Link></>;
+                case SetPasswordErrorCode.TOKEN_EXPIRED:
                     return <>Ton lien a expiré. <Link to="oubli/">Demandes-en un autre.</Link></>;
                 default:
                     return "Erreur non définie. Contacte un(e) administrateur(trice)."
