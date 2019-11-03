@@ -3,6 +3,7 @@
   fields:
     username: 17admin
     email: 17admin@mpt.fr
+    password: pbkdf2_sha256$100000$tos6gO0V3tNL$Vd14vNq3N5MwGX6TsvBV0RW+DQzGpy3OGfKqCtL3kls=
 
 - model: sso_server.access
   pk: 1
@@ -22,6 +23,7 @@
   fields:
     username: 17portail
     email: 17portail@mpt.fr
+    password: pbkdf2_sha256$100000$tos6gO0V3tNL$Vd14vNq3N5MwGX6TsvBV0RW+DQzGpy3OGfKqCtL3kls=
 
 - model: sso_server.access
   pk: 3
@@ -35,6 +37,7 @@
   fields:
     username: 17rezal
     email: 17rezal@mpt.fr
+    password: pbkdf2_sha256$100000$tos6gO0V3tNL$Vd14vNq3N5MwGX6TsvBV0RW+DQzGpy3OGfKqCtL3kls=
 
 - model: sso_server.access
   pk: 4

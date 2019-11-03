@@ -26,9 +26,9 @@ class CreateTokenSerializer(serializers.Serializer):
 
         # Check if the user is allowed to access the given audience.
         if not Access.objects.filter(user=user, audience=data["audience"]).exists():
-            raise serializers.ValidationError("UNAUTHORIZED_AUDIENCE")
+            raise serializers.ValidationError("INVALID_AUDIENCE")
 
-        data["access"] = create_token_for_user(user, data["audience"])
+        data["token"] = create_token_for_user(user, data["audience"])
 
         return data
 

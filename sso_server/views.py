@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import views, status
-from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from sso_server.models import PasswordRecovery, User
@@ -27,7 +26,7 @@ class LoginView(views.APIView):
 
     Return:
          * BAD_CREDENTIALS if the password does not match.
-         * UNAUTHORIZED_AUDIENCE if the user is not allowed to access the audience.
+         * INVALID_AUDIENCE if the user is not allowed to access the audience.
          * UNKNOWN_ERROR for all the other errors (often when a field is missing).
          * {"redirect": "https://…"} if the login is successful.
     """
@@ -37,8 +36,9 @@ class LoginView(views.APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = CreateTokenSerializer(data=request.data)
+
         if not serializer.is_valid():
-            # This will return BAD_CREDENTIALS or UNAUTHORIZED_AUDIENCE.
+            # This will return BAD_CREDENTIALS or INVALID_AUDIENCE.
             if (
                 "non_field_errors" in serializer.errors
                 and len(serializer.errors["non_field_errors"]) > 0
@@ -51,17 +51,17 @@ class LoginView(views.APIView):
                 "audience" in serializer.errors
                 and len(serializer.errors["audience"]) > 0
             ):
-                raise ValidationError("INVALID_AUDIENCE")
+                return Response("INVALID_AUDIENCE", status=status.HTTP_401_UNAUTHORIZED)
             else:
-                raise ValidationError("UNKNOWN_ERROR")
+                raise Response("UNKNOWN_ERROR", status=status.HTTP_401_UNAUTHORIZED)
 
         audience = serializer.validated_data["audience"]
-        access = serializer.validated_data["access"]  # The JWT token.
+        token = serializer.validated_data["token"]  # The JWT token.
 
         # Compute the redirect URL with the JWT token as a GET parameter.
         base_url = settings.JWT_AUTH_SETTINGS["REDIRECT_URLS"][audience]
-        parameter = f"{settings.JWT_AUTH_SETTINGS['GET_PARAMETER']}={access}"
-        redirect_url = f"{base_url}?{parameter}"
+        parameter = f"?{settings.JWT_AUTH_SETTINGS['GET_PARAMETER']}={token}"
+        redirect_url = base_url + parameter
 
         return Response({"redirect": redirect_url}, status=status.HTTP_200_OK)
 

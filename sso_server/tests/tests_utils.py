@@ -42,26 +42,37 @@ class BaseTestCase(APITestCase):
             self._res.status_code, status_codes, msg=self._prepare_message(user_msg)
         )
 
+    def assertResponseDataEqual(self, data, user_msg=""):
+        self.assertIsNotNone(self._res, msg="No request was made.")
+        self.assertEqual(self._res.data, data, msg=self._prepare_message(user_msg))
+
     def get(self, url, data=None):
         self._res = self.client.get(self.api_base + url, data)
+        return self._res
 
     def post(self, url, data=None, format="json"):
         self._res = self.client.post(self.api_base + url, data, format=format)
+        return self._res
 
     def patch(self, url, data=None, format="json"):
         self._res = self.client.patch(self.api_base + url, data, format=format)
+        return self._res
 
     def put(self, url, data=None, format="json"):
         self._res = self.client.put(self.api_base + url, data, format=format)
+        return self._res
 
     def delete(self, url):
         self._res = self.client.delete(self.api_base + url)
+        return self._res
 
     def head(self, url, data=None):
         self._res = self.client.head(self.api_base + url, data)
+        return self._res
 
     def options(self, url, data=None):
         self._res = self.client.options(self.api_base + url, data)
+        return self._res
 
 
 def mess(s: str) -> str:
