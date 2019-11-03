@@ -121,7 +121,7 @@ class RequestPasswordRecoveryView(views.APIView):
         if not serializer.is_valid():
             return self.INVALID_EMAIL_ERROR
 
-        password_recovery = serializer.save()
+        password_recovery = serializer.save(user=user)
 
         # Finally, return the new PasswordRecovery.
         return Response(
@@ -140,6 +140,7 @@ class RecoverPasswordView(views.APIView):
         }
 
     Return:
+         * WEAK_PASSWORD if the password is too weak.
          * INVALID_TOKEN if the token does not exist in the database.
          * TOKEN_EXPIRED if the token is expired.
          * UNKNOWN_ERROR for all the other errors.
@@ -149,6 +150,9 @@ class RecoverPasswordView(views.APIView):
     permission_classes = ()
     authentication_classes = ()
 
+    WEAK_PASSWORD_ERROR = Response(
+        {"error": "WEAK_PASSWORD"}, status=status.HTTP_400_BAD_REQUEST
+    )
     INVALID_TOKEN_ERROR = Response(
         {"error": "INVALID_TOKEN"}, status=status.HTTP_400_BAD_REQUEST
     )
@@ -174,6 +178,9 @@ class RecoverPasswordView(views.APIView):
                     return self.INVALID_TOKEN_ERROR
                 elif serializer.errors["token"][0] in ("TOKEN_EXPIRED",):
                     return self.TOKEN_EXPIRED_ERROR
+            elif "password" in serializer.errors:
+                if serializer.errors["password"][0] in ("WEAK_PASSWORD",):
+                    return self.WEAK_PASSWORD_ERROR
 
             return self.UNKNOWN_ERROR
 
@@ -184,7 +191,8 @@ class RecoverPasswordView(views.APIView):
         password_recovery.user.set_password(serializer.validated_data["password"])
         password_recovery.user.save()
 
-        # Remove the password_recovery.
-        password_recovery.delete()
+        # Set the password_recovery as `used`.
+        password_recovery.used = True
+        password_recovery.save()
 
         return self.PASSWORD_CHANGED

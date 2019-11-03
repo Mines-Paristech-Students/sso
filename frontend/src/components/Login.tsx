@@ -110,7 +110,7 @@ export default function Login(props: LoginProps) {
                         <Form.Label>Nom d’utilisateur</Form.Label>
                         <InputGroup>
                             <InputGroup.Prepend>
-                                <InputGroup.Text><span role="img" aria-label="ID">🆔</span></InputGroup.Text>
+                                <InputGroup.Text><span role="img" aria-label="émoticône ID">🆔</span></InputGroup.Text>
                             </InputGroup.Prepend>
                             <Form.Control type="text"
                                           name="username"
@@ -126,7 +126,7 @@ export default function Login(props: LoginProps) {
                         <Form.Label>Mot de passe</Form.Label>
                         <InputGroup>
                             <InputGroup.Prepend>
-                                <InputGroup.Text><span role="img" aria-label="clé">🔑</span></InputGroup.Text>
+                                <InputGroup.Text><span role="img" aria-label="émoticône clé">🔑</span></InputGroup.Text>
                             </InputGroup.Prepend>
                             <Form.Control type="password"
                                           name="password"
@@ -146,7 +146,7 @@ export default function Login(props: LoginProps) {
                 </Form>
 
                 <p>
-                    <Link to="/oubli">Mot de passe oublié ?</Link>
+                    <Link to="/mot-de-passe/oubli">Mot de passe oublié ?</Link>
                 </p>
 
                 {

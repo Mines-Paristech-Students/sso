@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth import password_validation
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 
@@ -71,6 +73,10 @@ class RecoverPasswordSerializer(serializers.Serializer):
     token = serializers.UUIDField()
     password = serializers.CharField()
 
+    def __init__(self, *args, **kwargs):
+        super(RecoverPasswordSerializer, self).__init__(*args, **kwargs)
+        self._user = None
+
     def validate_token(self, value):
         try:
             password_recovery = PasswordRecovery.objects.get(id=value)
@@ -79,5 +85,21 @@ class RecoverPasswordSerializer(serializers.Serializer):
 
         if not password_recovery.is_valid:
             raise serializers.ValidationError("TOKEN_EXPIRED")
+
+        self._user = password_recovery.user
+
+        return value
+
+    def validate_password(self, value):
+        password_validators = password_validation.get_password_validators(
+            settings.AUTH_PASSWORD_VALIDATORS
+        )
+
+        try:
+            password_validation.validate_password(
+                value, user=self._user, password_validators=password_validators
+            )
+        except password_validation.ValidationError:
+            raise serializers.ValidationError("WEAK_PASSWORD")
 
         return value

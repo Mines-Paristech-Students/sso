@@ -36,11 +36,12 @@ export default function FormAlert(props: Props) {
         } else if (props.setPasswordError) {
             switch (props.setPasswordError) {
                 case SetPasswordErrorCode.WEAK_PASSWORD:
-                    return "Ce mot de passe est tout pourri, choisis-en un autre ! (stp)";
+                    return <>Ce mot de passe est tout pourri, choisis-en un autre ! <span role="img"
+                                                                                          aria-label="émoticônes en colère">😡😡😡</span></>;
                 case SetPasswordErrorCode.INVALID_TOKEN:
-                    return <>Ton lien a expiré. <Link to="oubli/">Demandes-en un autre.</Link></>;
+                    return <>Ton lien a expiré. <Link to="/mot-de-passe/oubli/">Demandes-en un autre.</Link></>;
                 case SetPasswordErrorCode.TOKEN_EXPIRED:
-                    return <>Ton lien a expiré. <Link to="oubli/">Demandes-en un autre.</Link></>;
+                    return <>Ton lien a expiré. <Link to="/mot-de-passe/oubli/">Demandes-en un autre.</Link></>;
                 default:
                     return "Erreur non définie. Contacte un(e) administrateur(trice)."
             }

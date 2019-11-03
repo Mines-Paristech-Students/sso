@@ -71,7 +71,7 @@ export default function RequestPasswordRecovery(props: Props) {
         const paragraph = emailSent
             ? <p>
                 Nous t’avons envoyé un mail (il est peut-être dans ton dossier « Spam »).<br/>
-                Si tu ne l’as pas reçu d’ici quelques minutes, <Link to="/oubli"
+                Si tu ne l’as pas reçu d’ici quelques minutes, <Link to="/mot-de-passe/oubli"
                                                                      onClick={() => window.location.reload()}>réessaye</Link> ou <a
                 href="mailto:rezal@mines-paristech.fr">contacte-nous</a>.
             </p>
@@ -91,7 +91,7 @@ export default function RequestPasswordRecovery(props: Props) {
                         <Form.Label>Adresse mail</Form.Label>
                         <InputGroup>
                             <InputGroup.Prepend>
-                                <InputGroup.Text><span role="img" aria-label="enveloppe">✉</span></InputGroup.Text>
+                                <InputGroup.Text><span role="img" aria-label="émoticône enveloppe">✉</span></InputGroup.Text>
                             </InputGroup.Prepend>
                             <Form.Control type="email"
                                           name="email"

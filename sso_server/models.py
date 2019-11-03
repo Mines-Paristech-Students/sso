@@ -35,11 +35,18 @@ class PasswordRecovery(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, to_field="email", on_delete=models.CASCADE
+        settings.AUTH_USER_MODEL,
+        to_field="email",
+        on_delete=models.CASCADE,
+        editable=False,
     )
 
     created_at = models.DateTimeField(editable=False, default=timezone.now)
 
+    used = models.BooleanField(default=False, editable=False)
+
     @property
     def is_valid(self) -> bool:
-        return self.created_at + self.TOKEN_LIFETIME > timezone.now()
+        return (
+            self.created_at + self.TOKEN_LIFETIME > timezone.now()
+        ) and not self.used

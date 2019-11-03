@@ -19,7 +19,7 @@ export default function FakeAdmin() {
             {
                 buttonPushed &&
                     <div className="troll">
-                        <span role="img" aria-label="lol">😂😂😂</span>
+                        <span role="img" aria-label="émoticônes lol">😂😂😂</span>
                     </div>
             }
     </MainContainer>

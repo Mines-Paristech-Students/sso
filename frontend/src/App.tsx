@@ -16,10 +16,10 @@ const App: React.FC = () => {
                     <Route path="/connexion/:audience">
                         <Login endpoint="http://localhost:8100/api/login/"/>
                     </Route>
-                    <Route path="/oubli">
+                    <Route path="/mot-de-passe/oubli">
                         <RequestPasswordRecovery endpoint="http://localhost:8100/api/password/recover/request/"/>
                     </Route>
-                    <Route path="/nouveau/:token">
+                    <Route path="/mot-de-passe/nouveau/:token">
                         <RecoverPassword endpoint="http://localhost:8100/api/password/recover/set_password/"/>
                     </Route>
                     <Route path="/admin">

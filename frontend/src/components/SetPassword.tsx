@@ -61,6 +61,7 @@ export default function SetPassword(props: Props) {
             {responseType: "json"}
         ).then(value => {
             setPasswordChanged(true);
+            setPassword("");
         }).catch(error => {
             console.log(error.response.data);
             if (error.response && error.response.status === 400) {
@@ -87,8 +88,7 @@ export default function SetPassword(props: Props) {
                 Mot de passe changé ! Tu peux maintenant te connecter avec.
             </p>
             : <p>
-                Ton nouveau mot de passe doit comporter au moins <strong>12 caractères</strong>, dont <strong>1
-                chiffre</strong>, <strong>1 majuscule</strong> et <strong>1 minuscule</strong>.
+                Ton nouveau mot de passe doit comporter au moins <strong>12 caractères</strong>.
             </p>;
 
         const buttonText = passwordChanged ? "Demande envoyée" : "Changer mon mot de passe";
@@ -102,7 +102,7 @@ export default function SetPassword(props: Props) {
                         <Form.Label>Nouveau mot de passe</Form.Label>
                         <InputGroup>
                             <InputGroup.Prepend>
-                                <InputGroup.Text><span role="img" aria-label="clé">🔑</span></InputGroup.Text>
+                                <InputGroup.Text><span role="img" aria-label="émoticône clé">🔑</span></InputGroup.Text>
                             </InputGroup.Prepend>
                             <Form.Control type="password"
                                           name="password"
@@ -110,6 +110,7 @@ export default function SetPassword(props: Props) {
                                           onChange={handleChange}
                                           required
                                           disabled={passwordChanged}
+                                          minLength={12}
                                           aria-label="Nouveau mot de passe"
                                           placeholder="Nouveau mot de passe"/>
                         </InputGroup>
