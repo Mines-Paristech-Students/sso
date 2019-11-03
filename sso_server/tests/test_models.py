@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.utils import timezone
 
 from sso_server.models import PasswordRecovery
-from .tests_utils import BaseTestCase
+from .utils import BaseTestCase
 
 
 class TestPasswordRecovery(BaseTestCase):

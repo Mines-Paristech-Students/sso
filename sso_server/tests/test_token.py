@@ -3,10 +3,10 @@ from datetime import datetime
 from django.conf import settings
 
 from sso_server.token import create_token, create_token_for_user, decode_token
-from .tests_utils import BaseTestCase
+from .utils import BaseTestCase
 
 
-class TestTokens(BaseTestCase):
+class TestToken(BaseTestCase):
     fixtures = ["test_sso_server.yaml"]
 
     def test_create_token_decode_token(self):

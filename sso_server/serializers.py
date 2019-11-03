@@ -22,7 +22,7 @@ class CreateTokenSerializer(serializers.Serializer):
         user = authenticate(username=data["username"], password=data["password"])
 
         if user is None or not user.is_active:
-            raise serializers.ValidationError("BAD_CREDENTIALS")
+            raise serializers.ValidationError("INVALID_CREDENTIALS")
 
         # Check if the user is allowed to access the given audience.
         if not Access.objects.filter(user=user, audience=data["audience"]).exists():
@@ -58,10 +58,6 @@ class PasswordRecoverySerializer(serializers.ModelSerializer):
         del data["user"]
 
         return data
-
-
-class RequestPasswordRecoverySerializer(serializers.Serializer):
-    email = serializers.EmailField()
 
 
 class RecoverPasswordSerializer(serializers.Serializer):

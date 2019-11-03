@@ -17,7 +17,7 @@ export default function FormAlert(props: Props) {
     function getAlertContent() {
         if (props.loginError) {
             switch (props.loginError) {
-                case LoginErrorCode.BAD_CREDENTIALS:
+                case LoginErrorCode.INVALID_CREDENTIALS:
                     return "Identifiants incorrects.";
                 case LoginErrorCode.UNAUTHORIZED_AUDIENCE:
                     return "Tu ne peux pas accéder à ce site.";

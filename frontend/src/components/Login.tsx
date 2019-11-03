@@ -11,7 +11,7 @@ import MainContainer from "./MainContainer";
 import {getUsernamePlaceholder} from "./placeholders";
 
 export enum LoginErrorCode {
-    BAD_CREDENTIALS = "BAD_CREDENTIALS",
+    INVALID_CREDENTIALS = "INVALID_CREDENTIALS",
     UNAUTHORIZED_AUDIENCE = "UNAUTHORIZED_AUDIENCE",
     INVALID_AUDIENCE = "INVALID_AUDIENCE",
     UNKNOWN_ERROR = "UNKNOWN_ERROR",
@@ -71,8 +71,8 @@ export default function Login(props: LoginProps) {
         }).catch(error => {
             if (error.response && error.response.status === 401) {
                 switch (error.response.data) {
-                    case LoginErrorCode.BAD_CREDENTIALS:
-                        setAlertErrorCode(LoginErrorCode.BAD_CREDENTIALS);
+                    case LoginErrorCode.INVALID_CREDENTIALS:
+                        setAlertErrorCode(LoginErrorCode.INVALID_CREDENTIALS);
                         break;
                     case LoginErrorCode.UNAUTHORIZED_AUDIENCE:
                         setAlertErrorCode(LoginErrorCode.UNAUTHORIZED_AUDIENCE);

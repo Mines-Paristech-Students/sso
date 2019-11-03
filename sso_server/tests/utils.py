@@ -13,6 +13,7 @@ class BaseTestCase(APITestCase):
     """
 
     api_base = "/api/v1"
+    fixtures = ["test_sso_server.yaml"]
 
     def __init__(self, *args, **kwargs):
         super(BaseTestCase, self).__init__(*args, **kwargs)
