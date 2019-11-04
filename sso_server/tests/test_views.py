@@ -1,5 +1,3 @@
-from datetime import datetime, timezone
-
 from django.contrib.auth import authenticate
 
 from sso_server.models import PasswordRecovery
@@ -17,13 +15,12 @@ class TestLogin(BaseTestCase):
     def test_incomplete_payload(self):
         for payload in [
             {},
-            {"username": "17piche"},
+            {"username": "17admin"},
             {"password": "password"},
             {"audience": "portail"},
             {"password": "password", "audience": "portail"},
-            {"username": "17piche", "audience": "portail"},
-            {"username": "17piche", "password": "password"},
-            {"username": "17piche", "password": "password", "audience": "portail"},
+            {"username": "17admin", "audience": "portail"},
+            {"username": "17admin", "password": "password"},
         ]:
             self.post(self.endpoint, payload)
             self.assertStatusCode(401)
@@ -116,12 +113,12 @@ class TestRequestPasswordRecovery(BaseTestCase):
     def test_successful_request(self):
         payload = {"email": "17admin@mpt.fr"}
         res = self.post(self.endpoint, payload)
-        self.assertStatusCode(200)
+        self.assertStatusCode(204)
 
         self.assertEqual(1, PasswordRecovery.objects.count())
 
-        # We DON'T want the token to be sent back to the client, only to the user's email address.
-        self.assertNotIn("token", res.data)
+        # We DON'T want the token to be sent back to the client.
+        self.assertIsNone(res.data)
 
 
 class TestResetPassword(BaseTestCase):
@@ -140,9 +137,11 @@ class TestResetPassword(BaseTestCase):
             self.assertStatusCode(405)
 
     def test_incomplete_payload(self):
+        token = self.get_token()
+
         for payload in [
             {},
-            {"token": "c8d9e171-2795-4eee-9ad5-ee3c71065f13"},
+            {"token": token},
             {"password": "A password which should be more than twelve characters."},
         ]:
             self.post(self.endpoint, payload)
@@ -172,7 +171,81 @@ class TestResetPassword(BaseTestCase):
     def test_can_set_password(self):
         payload = {"token": self.get_token(), "password": "mynewpasswordislong"}
         self.post(self.endpoint, payload)
-        self.assertStatusCode(200)
+        self.assertStatusCode(204)
+
+        self.assertIsNone(authenticate(username="17admin", password="password"))
+        self.assertIsNotNone(
+            authenticate(username="17admin", password="mynewpasswordislong")
+        )
+
+
+class TestChangePassword(BaseTestCase):
+    endpoint = "/password/change/"
+
+    def test_no_other_method_than_post(self):
+        for method in (self.get, self.patch, self.put, self.delete):
+            method(self.endpoint)
+            self.assertStatusCode(405)
+
+    def test_incomplete_payload(self):
+        for payload in [
+            {},
+            {"username": "17admin"},
+            {"old_password": "password"},
+            {"new_password": "mynewpasswordislong"},
+            {"old_password": "password", "new_password": "mynewpasswordislong"},
+            {"username": "17admin", "new_password": "mynewpasswordislong"},
+            {"username": "17admin", "old_password": "password"},
+        ]:
+            self.post(self.endpoint, payload)
+            self.assertStatusCode(400)
+
+    def test_bad_username(self):
+        payload = {
+            "username": "17piche",
+            "old_password": "password",
+            "new_password": "passwordpassword",
+        }
+        self.post(self.endpoint, payload)
+        self.assertStatusCode(400)
+        self.assertResponseDataEqual(
+            {"error": {"type": "INVALID_CREDENTIALS", "detail": ""}}
+        )
+
+    def test_bad_password(self):
+        payload = {
+            "username": "17admin",
+            "old_password": "piche",
+            "new_password": "mynewpasswordislong",
+        }
+        self.post(self.endpoint, payload)
+        self.assertStatusCode(400)
+        self.assertResponseDataEqual(
+            {"error": {"type": "INVALID_CREDENTIALS", "detail": ""}}
+        )
+        self.assertIsNotNone(authenticate(username="17admin", password="password"))
+        self.assertIsNone(authenticate(username="17admin", password="passwordpassword"))
+
+    def test_weak_password(self):
+        payload = {
+            "username": "17admin",
+            "old_password": "password",
+            "new_password": "short",
+        }
+        self.post(self.endpoint, payload)
+        self.assertStatusCode(400)
+        self.assertResponseDataEqual({"error": {"type": "WEAK_PASSWORD", "detail": ""}})
+        self.assertIsNotNone(authenticate(username="17admin", password="password"))
+        self.assertIsNone(authenticate(username="17admin", password="short"))
+
+    def test_change_password(self):
+        payload = {
+            "username": "17admin",
+            "old_password": "password",
+            "new_password": "mynewpasswordislong",
+        }
+        self.post(self.endpoint, payload)
+        self.assertStatusCode(204)
 
         self.assertIsNone(authenticate(username="17admin", password="password"))
         self.assertIsNotNone(

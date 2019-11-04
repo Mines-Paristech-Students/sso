@@ -5,6 +5,7 @@ from sso_server.views import (
     DecodeView,
     ResetPasswordView,
     RequestPasswordRecoveryView,
+    ChangePasswordView,
 )
 
 urlpatterns = [
@@ -12,4 +13,5 @@ urlpatterns = [
     path("verify/", DecodeView.as_view()),
     path("password/recover/request/", RequestPasswordRecoveryView.as_view()),
     path("password/recover/reset/", ResetPasswordView.as_view()),
+    path("password/change/", ChangePasswordView.as_view()),
 ]

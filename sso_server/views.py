@@ -10,6 +10,7 @@ from sso_server.serializers import (
     DecodeTokenSerializer,
     RecoverPasswordSerializer,
     PasswordRecoverySerializer,
+    ChangePasswordSerializer,
 )
 
 
@@ -125,7 +126,7 @@ class RequestPasswordRecoveryView(views.APIView):
             * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
 
     Success:
-        Return 200 and that's all.
+        Return 204 (no content).
     """
 
     permission_classes = ()
@@ -162,7 +163,7 @@ class RequestPasswordRecoveryView(views.APIView):
         # TODO: actually send the email...
 
         # Return nothing.
-        return Response("", status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ResetPasswordView(views.APIView):
@@ -190,7 +191,7 @@ class ResetPasswordView(views.APIView):
             * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
 
     Success:
-         Return 200 and "".
+         Return 204 (no content).
     """
 
     permission_classes = ()
@@ -227,4 +228,73 @@ class ResetPasswordView(views.APIView):
         password_recovery.used = True
         password_recovery.save()
 
-        return Response("", status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ChangePasswordView(views.APIView):
+    """
+        Change an user password.
+
+        Request:
+            {
+                "username": "",
+                "old_password": "",
+                "new_password": ""
+            }
+
+        Errors:
+            Return 400 and:
+            {
+                "error": {
+                    "type": "",
+                    "detail": ""
+                }
+            }
+
+            The type of the error can be:
+                * WEAK_PASSWORD if the password is too weak.
+                * INVALID_CREDENTIALS if the pair username / password does not exist in the database.
+                * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
+
+        Success:
+             Return 204 (no content).
+        """
+
+    permission_classes = ()
+    authentication_classes = ()
+
+    def post(self, request, *args, **kwargs):
+        serializer = ChangePasswordSerializer(data=request.data)
+
+        if not serializer.is_valid():
+            if "old_password" in serializer.errors or "username" in serializer.errors:
+                return Response(
+                    {"error": {"type": "INVALID_CREDENTIALS", "detail": ""}},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            elif "new_password" in serializer.errors:
+                return Response(
+                    {"error": {"type": "WEAK_PASSWORD", "detail": ""}},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            elif "non_field_errors" in serializer.errors:
+                error = serializer.errors["non_field_errors"][0]
+
+                if error in ("INVALID_CREDENTIALS", "WEAK_PASSWORD"):
+                    return Response(
+                        {"error": {"type": error, "detail": ""}},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+            return Response(
+                {"error": {"type": "UNKNOWN_ERROR", "detail": serializer.errors}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Get the user, change their password.
+        user = User.objects.get(username=serializer.validated_data["username"])
+
+        user.set_password(serializer.validated_data["new_password"])
+        user.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

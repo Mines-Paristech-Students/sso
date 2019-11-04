@@ -101,3 +101,37 @@ class RecoverPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError("WEAK_PASSWORD")
 
         return value
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    This serializer tries to authenticate the user with `old_password` and `username`.
+    It also validates `new_password`.
+    """
+
+    username = serializers.CharField()
+    old_password = serializers.CharField(style={"input_type": "password"})
+    new_password = serializers.CharField(style={"input_type": "password"})
+
+    def validate(self, data):
+        data = super(ChangePasswordSerializer, self).validate(data)
+
+        # Check if the credentials are valid.
+        user = authenticate(username=data["username"], password=data["old_password"])
+
+        if user is None or not user.is_active:
+            raise serializers.ValidationError("INVALID_CREDENTIALS")
+
+        # Validate the new password
+        password_validators = password_validation.get_password_validators(
+            settings.AUTH_PASSWORD_VALIDATORS
+        )
+
+        try:
+            password_validation.validate_password(
+                data["new_password"], user=user, password_validators=password_validators
+            )
+        except password_validation.ValidationError:
+            raise serializers.ValidationError("WEAK_PASSWORD")
+
+        return data
