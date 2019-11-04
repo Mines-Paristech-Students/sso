@@ -12,7 +12,6 @@ import FormAlert from "./FormAlert";
 export enum SetPasswordErrorCode {
     WEAK_PASSWORD = "WEAK_PASSWORD",
     INVALID_TOKEN = "INVALID_TOKEN",
-    TOKEN_EXPIRED = "TOKEN_EXPIRED",
     UNKNOWN_ERROR = "UNKNOWN_ERROR",
 }
 
@@ -63,14 +62,12 @@ export default function SetPassword(props: Props) {
             setPasswordChanged(true);
             setPassword("");
         }).catch(error => {
-            console.log(error.response.data);
-            if (error.response && error.response.status === 400) {
-                switch (error.response.data.error) {
+            const response = error.response;
+
+            if (response && response.status === 400) {
+                switch (response.data.error.type) {
                     case SetPasswordErrorCode.WEAK_PASSWORD:
                         setAlertErrorCode(SetPasswordErrorCode.WEAK_PASSWORD);
-                        break;
-                    case SetPasswordErrorCode.TOKEN_EXPIRED:
-                        setAlertErrorCode(SetPasswordErrorCode.TOKEN_EXPIRED);
                         break;
                     case SetPasswordErrorCode.INVALID_TOKEN:
                         setAlertErrorCode(SetPasswordErrorCode.INVALID_TOKEN);

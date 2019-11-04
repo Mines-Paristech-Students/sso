@@ -23,6 +23,9 @@ class Access(models.Model):
         max_length=10, choices=AUDIENCES, blank=True, default=""
     )
 
+    class Meta:
+        unique_together = ("user", "audience")
+
 
 class PasswordRecovery(models.Model):
     """

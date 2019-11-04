@@ -12,7 +12,6 @@ import {getUsernamePlaceholder} from "./placeholders";
 
 export enum LoginErrorCode {
     INVALID_CREDENTIALS = "INVALID_CREDENTIALS",
-    UNAUTHORIZED_AUDIENCE = "UNAUTHORIZED_AUDIENCE",
     INVALID_AUDIENCE = "INVALID_AUDIENCE",
     UNKNOWN_ERROR = "UNKNOWN_ERROR",
 }
@@ -20,6 +19,9 @@ export enum LoginErrorCode {
 type LoginProps = {
     endpoint: string,
 };
+
+const usernamePlaceholder = getUsernamePlaceholder();
+const passwordPlaceholder = "Mot de passe";
 
 export default function Login(props: LoginProps) {
     // The audience GET parameter.
@@ -33,10 +35,7 @@ export default function Login(props: LoginProps) {
     }
 
     // The form states.
-    const usernamePlaceholder = getUsernamePlaceholder();
-    const [username, setUsername] = useState<string>("");
-
-    const passwordPlaceholder = "Mot de passe";
+    const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("");
 
     function handleChange(event: FormEvent<any>) {
@@ -69,13 +68,15 @@ export default function Login(props: LoginProps) {
         ).then(value => {
             window.location = value.data.redirect;
         }).catch(error => {
-            if (error.response && error.response.status === 401) {
-                switch (error.response.data) {
+            const response = error.response;
+
+            if (response && response.status === 401) {
+                switch (response.data.error.type) {
                     case LoginErrorCode.INVALID_CREDENTIALS:
                         setAlertErrorCode(LoginErrorCode.INVALID_CREDENTIALS);
                         break;
-                    case LoginErrorCode.UNAUTHORIZED_AUDIENCE:
-                        setAlertErrorCode(LoginErrorCode.UNAUTHORIZED_AUDIENCE);
+                    case LoginErrorCode.INVALID_AUDIENCE:
+                        setAlertErrorCode(LoginErrorCode.INVALID_AUDIENCE);
                         break;
                     default:
                         setAlertErrorCode(LoginErrorCode.UNKNOWN_ERROR);

@@ -120,15 +120,8 @@ class TestRequestPasswordRecovery(BaseTestCase):
 
         self.assertEqual(1, PasswordRecovery.objects.count())
 
-        password_recovery = PasswordRecovery.objects.last()
-        self.assertEqual(res.data["token"], str(password_recovery.id))
-        self.assertEqual(res.data["email"], password_recovery.user.email)
-        self.assertEqual(
-            datetime.strptime(res.data["created_at"], "%Y-%m-%dT%H:%M:%S.%fZ")
-            .replace(tzinfo=timezone.utc)
-            .timestamp(),
-            password_recovery.created_at.timestamp(),
-        )
+        # We DON'T want the token to be sent back to the client, only to the user's email address.
+        self.assertNotIn("token", res.data)
 
 
 class TestRecoverPassword(BaseTestCase):

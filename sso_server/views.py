@@ -125,12 +125,7 @@ class RequestPasswordRecoveryView(views.APIView):
             * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
 
     Success:
-        Return 200 and the representation of the PasswordRecovery object:
-             {
-                "token": "",
-                "created_at": "",
-                "email": ""
-             }
+        Return 200 and that's all.
     """
 
     permission_classes = ()
@@ -162,14 +157,12 @@ class RequestPasswordRecoveryView(views.APIView):
         if not serializer.is_valid():
             return self.INVALID_EMAIL_ERROR
 
-        password_recovery = serializer.save(user=user)
+        serializer.save(user=user)
 
         # TODO: actually send the email...
 
-        # Return the new PasswordRecovery.
-        return Response(
-            serializer.to_representation(password_recovery), status=status.HTTP_200_OK
-        )
+        # Return nothing.
+        return Response("", status=status.HTTP_200_OK)
 
 
 class RecoverPasswordView(views.APIView):

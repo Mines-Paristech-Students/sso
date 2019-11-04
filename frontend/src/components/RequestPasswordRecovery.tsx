@@ -58,8 +58,10 @@ export default function RequestPasswordRecovery(props: Props) {
         ).then(value => {
             setEmailSent(true);
         }).catch(error => {
-            if (error.response && error.response.status === 400 &&
-                error.response.data.error === RequestPasswordRecoveryErrorCode.INVALID_EMAIL) {
+            const response = error.response;
+
+            if (response && response.status === 400 &&
+                response.data.error.type === RequestPasswordRecoveryErrorCode.INVALID_EMAIL) {
                 setAlertErrorCode(RequestPasswordRecoveryErrorCode.INVALID_EMAIL);
             } else {
                 setAlertErrorCode(RequestPasswordRecoveryErrorCode.UNKNOWN_ERROR);

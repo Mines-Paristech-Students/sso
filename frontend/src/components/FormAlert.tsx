@@ -14,24 +14,24 @@ type Props = {
 };
 
 export default function FormAlert(props: Props) {
+    const UNKNOWN_ERROR = "Erreur non définie. Contacte un(e) administrateur(trice).";
+
     function getAlertContent() {
         if (props.loginError) {
             switch (props.loginError) {
                 case LoginErrorCode.INVALID_CREDENTIALS:
                     return "Identifiants incorrects.";
-                case LoginErrorCode.UNAUTHORIZED_AUDIENCE:
-                    return "Tu ne peux pas accéder à ce site.";
                 case LoginErrorCode.INVALID_AUDIENCE:
-                    return "Ce site ne peut pas se connecter via ce serveur.";
+                    return "Tu ne peux pas accéder à ce site.";
                 default:
-                    return "Erreur non définie. Contacte un(e) administrateur(trice)."
+                    return  UNKNOWN_ERROR;
             }
         } else if (props.requestPasswordRecoveryError) {
             switch (props.requestPasswordRecoveryError) {
                 case RequestPasswordRecoveryErrorCode.INVALID_EMAIL:
                     return "Adresse mail inconnue.";
                 default:
-                    return "Erreur non définie. Contacte un(e) administrateur(trice)."
+                    return UNKNOWN_ERROR;
             }
         } else if (props.setPasswordError) {
             switch (props.setPasswordError) {
@@ -40,10 +40,8 @@ export default function FormAlert(props: Props) {
                                                                                           aria-label="émoticônes en colère">😡😡😡</span></>;
                 case SetPasswordErrorCode.INVALID_TOKEN:
                     return <>Ton lien a expiré. <Link to="/mot-de-passe/oubli/">Demandes-en un autre.</Link></>;
-                case SetPasswordErrorCode.TOKEN_EXPIRED:
-                    return <>Ton lien a expiré. <Link to="/mot-de-passe/oubli/">Demandes-en un autre.</Link></>;
                 default:
-                    return "Erreur non définie. Contacte un(e) administrateur(trice)."
+                    return UNKNOWN_ERROR;
             }
         }
 
