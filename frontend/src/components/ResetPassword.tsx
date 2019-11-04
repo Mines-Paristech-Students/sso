@@ -9,7 +9,7 @@ import MainContainer from "./MainContainer";
 import {useParams} from "react-router";
 import FormAlert from "./FormAlert";
 
-export enum SetPasswordErrorCode {
+export enum ResetPasswordErrorCode {
     WEAK_PASSWORD = "WEAK_PASSWORD",
     INVALID_TOKEN = "INVALID_TOKEN",
     UNKNOWN_ERROR = "UNKNOWN_ERROR",
@@ -19,12 +19,12 @@ type Props = {
     endpoint: string,
 };
 
-export default function SetPassword(props: Props) {
+export default function ResetPassword(props: Props) {
     // The token GET parameter.
     let {token} = useParams();
 
     // The alert message at the bottom.
-    const [alertErrorCode, setAlertErrorCode] = useState<null | SetPasswordErrorCode>(null);
+    const [alertErrorCode, setAlertErrorCode] = useState<null | ResetPasswordErrorCode>(null);
 
     function clearAlert() {
         setAlertErrorCode(null);
@@ -66,15 +66,15 @@ export default function SetPassword(props: Props) {
 
             if (response && response.status === 400) {
                 switch (response.data.error.type) {
-                    case SetPasswordErrorCode.WEAK_PASSWORD:
-                        setAlertErrorCode(SetPasswordErrorCode.WEAK_PASSWORD);
+                    case ResetPasswordErrorCode.WEAK_PASSWORD:
+                        setAlertErrorCode(ResetPasswordErrorCode.WEAK_PASSWORD);
                         break;
-                    case SetPasswordErrorCode.INVALID_TOKEN:
-                        setAlertErrorCode(SetPasswordErrorCode.INVALID_TOKEN);
+                    case ResetPasswordErrorCode.INVALID_TOKEN:
+                        setAlertErrorCode(ResetPasswordErrorCode.INVALID_TOKEN);
                         break;
                 }
             } else {
-                setAlertErrorCode(SetPasswordErrorCode.UNKNOWN_ERROR);
+                setAlertErrorCode(ResetPasswordErrorCode.UNKNOWN_ERROR);
             }
         })
     }

@@ -124,13 +124,15 @@ class TestRequestPasswordRecovery(BaseTestCase):
         self.assertNotIn("token", res.data)
 
 
-class TestRecoverPassword(BaseTestCase):
-    endpoint = "/password/recover/set_password/"
+class TestResetPassword(BaseTestCase):
+    endpoint = "/password/recover/reset/"
     request_endpoint = "/password/recover/request/"
 
     def get_token(self):
         payload = {"email": "17admin@mpt.fr"}
-        return self.post(self.request_endpoint, payload).data["token"]
+        self.post(self.request_endpoint, payload)
+
+        return str(PasswordRecovery.objects.last().id)
 
     def test_no_other_method_than_post(self):
         for method in (self.get, self.patch, self.put, self.delete):

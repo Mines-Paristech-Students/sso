@@ -165,7 +165,7 @@ class RequestPasswordRecoveryView(views.APIView):
         return Response("", status=status.HTTP_200_OK)
 
 
-class RecoverPasswordView(views.APIView):
+class ResetPasswordView(views.APIView):
     """
     Set a new password after a password request.
 

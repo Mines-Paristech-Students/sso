@@ -3,13 +3,13 @@ import React from 'react';
 import {LoginErrorCode} from './Login'
 import Alert from "react-bootstrap/Alert";
 import {RequestPasswordRecoveryErrorCode} from "./RequestPasswordRecovery";
-import {SetPasswordErrorCode} from "./SetPassword";
+import {ResetPasswordErrorCode} from "./ResetPassword";
 import {Link} from "react-router-dom";
 
 type Props = {
     loginError?: LoginErrorCode,
     requestPasswordRecoveryError?: RequestPasswordRecoveryErrorCode,
-    setPasswordError?: SetPasswordErrorCode,
+    setPasswordError?: ResetPasswordErrorCode,
     clearAlert: () => void
 };
 
@@ -35,10 +35,10 @@ export default function FormAlert(props: Props) {
             }
         } else if (props.setPasswordError) {
             switch (props.setPasswordError) {
-                case SetPasswordErrorCode.WEAK_PASSWORD:
+                case ResetPasswordErrorCode.WEAK_PASSWORD:
                     return <>Ce mot de passe est tout pourri, choisis-en un autre ! <span role="img"
                                                                                           aria-label="émoticônes en colère">😡😡😡</span></>;
-                case SetPasswordErrorCode.INVALID_TOKEN:
+                case ResetPasswordErrorCode.INVALID_TOKEN:
                     return <>Ton lien a expiré. <Link to="/mot-de-passe/oubli/">Demandes-en un autre.</Link></>;
                 default:
                     return UNKNOWN_ERROR;
