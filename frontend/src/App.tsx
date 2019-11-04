@@ -7,6 +7,7 @@ import Error404 from "./components/Error404";
 import RequestPasswordRecovery from "./components/RequestPasswordRecovery";
 import RecoverPassword from "./components/ResetPassword";
 import FakeAdmin from "./components/FakeAdmin";
+import ChangePassword from "./components/ChangePassword";
 
 const App: React.FC = () => {
     return (
@@ -21,6 +22,9 @@ const App: React.FC = () => {
                     </Route>
                     <Route path="/mot-de-passe/nouveau/:token">
                         <RecoverPassword endpoint="http://localhost:8100/api/v1/password/recover/reset/"/>
+                    </Route>
+                    <Route path="/mot-de-passe/changer/">
+                        <ChangePassword endpoint="http://localhost:8100/api/v1/password/change/"/>
                     </Route>
                     <Route path="/admin">
                         <FakeAdmin/>

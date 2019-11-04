@@ -8,6 +8,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import MainContainer from "./MainContainer";
 import {useParams} from "react-router";
 import FormAlert from "./FormAlert";
+import PasswordFormHeadParagraph from "./PasswordFormHeadParagraph";
 
 export enum ResetPasswordErrorCode {
     WEAK_PASSWORD = "WEAK_PASSWORD",
@@ -34,7 +35,7 @@ export default function ResetPassword(props: Props) {
     const [password, setPassword] = useState<string>("");
 
     // True iff the backend indicated that the password was successfully changed.
-    const [passwordChanged, setPasswordChanged] = useState<boolean>(false);
+    const [passwordHasChanged, setPasswordChanged] = useState<boolean>(false);
 
     function handleChange(event: FormEvent<any>) {
         const target = event.target as HTMLInputElement;
@@ -80,19 +81,9 @@ export default function ResetPassword(props: Props) {
     }
 
     function renderContent() {
-        const paragraph = passwordChanged
-            ? <p>
-                Mot de passe changé ! Tu peux maintenant te connecter avec.
-            </p>
-            : <p>
-                Ton nouveau mot de passe doit comporter au moins <strong>12 caractères</strong>.
-            </p>;
-
-        const buttonText = passwordChanged ? "Demande envoyée" : "Changer mon mot de passe";
-
         return (
             <div className="NewPasswordForm">
-                {paragraph}
+                <PasswordFormHeadParagraph passwordHasChanged={passwordHasChanged}/>
 
                 <Form onSubmit={handleSubmit}>
                     <Form.Group as={Col} xs={{span: 12}} lg={{span: 6, offset: 3}} controlId="formPassword">
@@ -106,7 +97,7 @@ export default function ResetPassword(props: Props) {
                                           value={password}
                                           onChange={handleChange}
                                           required
-                                          disabled={passwordChanged}
+                                          disabled={passwordHasChanged}
                                           minLength={12}
                                           aria-label="Nouveau mot de passe"
                                           placeholder="Nouveau mot de passe"/>
@@ -114,10 +105,10 @@ export default function ResetPassword(props: Props) {
                     </Form.Group>
 
                     <Button className="submit-button"
-                            variant="outline-dark"
-                            disabled={passwordChanged}
+                            variant="outline-primary"
+                            disabled={passwordHasChanged || password.length < 12}
                             type="submit">
-                        {buttonText}
+                        {passwordHasChanged ? "Demande envoyée" : "Changer mon mot de passe"}
                     </Button>
                 </Form>
 
