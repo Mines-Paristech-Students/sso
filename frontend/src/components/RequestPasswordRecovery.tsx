@@ -5,30 +5,19 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
 
-import MainContainer from "./MainContainer";
 import {Link} from "react-router-dom";
-import FormAlert from "./FormAlert";
+import {FormErrorCode} from "./FormAlert";
 import {getEmailPlaceholder} from "./placeholders";
-
-export enum RequestPasswordRecoveryErrorCode {
-    INVALID_EMAIL = "INVALID_EMAIL",
-    UNKNOWN_ERROR = "UNKNOWN_ERROR",
-}
 
 type Props = {
     endpoint: string,
+    setError: (errorCode: null | FormErrorCode, errorDetails: null | string) => void,
+    clearError: () => void,
 };
 
+const emailPlaceholder = getEmailPlaceholder();
+
 export default function RequestPasswordRecovery(props: Props) {
-    const emailPlaceholder = getEmailPlaceholder();
-
-    // The alert message at the bottom.
-    const [alertErrorCode, setAlertErrorCode] = useState<null | RequestPasswordRecoveryErrorCode>(null);
-
-    function clearAlert() {
-        setAlertErrorCode(null);
-    }
-
     // The form states.
     const [email, setEmail] = useState<string>("");
 
@@ -36,15 +25,14 @@ export default function RequestPasswordRecovery(props: Props) {
     const [emailSent, setEmailSent] = useState<boolean>(false);
 
     function handleChange(event: FormEvent<any>) {
+        props.clearError();
+
         const target = event.target as HTMLInputElement;
         const value = target.value;
 
         if (target.name === "email") {
             setEmail(value);
         }
-
-        // Remove the alert.
-        clearAlert();
     }
 
     function handleSubmit(event: FormEvent<any>) {
@@ -60,11 +48,12 @@ export default function RequestPasswordRecovery(props: Props) {
         }).catch(error => {
             const response = error.response;
 
-            if (response && response.status === 400 &&
-                response.data.error.type === RequestPasswordRecoveryErrorCode.INVALID_EMAIL) {
-                setAlertErrorCode(RequestPasswordRecoveryErrorCode.INVALID_EMAIL);
-            } else {
-                setAlertErrorCode(RequestPasswordRecoveryErrorCode.UNKNOWN_ERROR);
+            if (response && response.status === 400) {
+                if (response.data.error.code == FormErrorCode.UNKNOWN_ERROR) {
+                    props.setError(FormErrorCode.UNKNOWN_ERROR, response.data.error.details);
+                } else {
+                    props.setError(response.data.error.code, null);
+                }
             }
         });
     }
@@ -93,7 +82,8 @@ export default function RequestPasswordRecovery(props: Props) {
                         <Form.Label>Adresse mail</Form.Label>
                         <InputGroup>
                             <InputGroup.Prepend>
-                                <InputGroup.Text><span role="img" aria-label="émoticône enveloppe">✉</span></InputGroup.Text>
+                                <InputGroup.Text><span role="img"
+                                                       aria-label="émoticône enveloppe">✉</span></InputGroup.Text>
                             </InputGroup.Prepend>
                             <Form.Control type="email"
                                           name="email"
@@ -113,19 +103,9 @@ export default function RequestPasswordRecovery(props: Props) {
                         {buttonText}
                     </Button>
                 </Form>
-
-                {
-                    alertErrorCode &&
-                    <FormAlert requestPasswordRecoveryError={alertErrorCode}
-                               clearAlert={clearAlert}/>
-                }
             </div>
         )
     }
 
-    return (
-        <MainContainer heading={"Mot de passe oublié"}>
-            {renderContent()}
-        </MainContainer>
-    )
+    return renderContent();
 }

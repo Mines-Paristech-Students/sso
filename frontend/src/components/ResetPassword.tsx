@@ -4,32 +4,19 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
-
-import MainContainer from "./MainContainer";
 import {useParams} from "react-router";
-import FormAlert from "./FormAlert";
+import {FormErrorCode} from "./FormAlert";
 import PasswordFormHeadParagraph from "./PasswordFormHeadParagraph";
-
-export enum ResetPasswordErrorCode {
-    WEAK_PASSWORD = "WEAK_PASSWORD",
-    INVALID_TOKEN = "INVALID_TOKEN",
-    UNKNOWN_ERROR = "UNKNOWN_ERROR",
-}
 
 type Props = {
     endpoint: string,
+    setError: (errorCode: null | FormErrorCode, errorDetails: null | string) => void,
+    clearError: () => void,
 };
 
 export default function ResetPassword(props: Props) {
     // The token GET parameter.
     let {token} = useParams();
-
-    // The alert message at the bottom.
-    const [alertErrorCode, setAlertErrorCode] = useState<null | ResetPasswordErrorCode>(null);
-
-    function clearAlert() {
-        setAlertErrorCode(null);
-    }
 
     // The form states.
     const [password, setPassword] = useState<string>("");
@@ -38,15 +25,14 @@ export default function ResetPassword(props: Props) {
     const [passwordHasChanged, setPasswordChanged] = useState<boolean>(false);
 
     function handleChange(event: FormEvent<any>) {
+        props.clearError();
+
         const target = event.target as HTMLInputElement;
         const value = target.value;
 
         if (target.name === "password") {
             setPassword(value);
         }
-
-        // Remove the alert.
-        clearAlert();
     }
 
     function handleSubmit(event: FormEvent<any>) {
@@ -66,16 +52,11 @@ export default function ResetPassword(props: Props) {
             const response = error.response;
 
             if (response && response.status === 400) {
-                switch (response.data.error.type) {
-                    case ResetPasswordErrorCode.WEAK_PASSWORD:
-                        setAlertErrorCode(ResetPasswordErrorCode.WEAK_PASSWORD);
-                        break;
-                    case ResetPasswordErrorCode.INVALID_TOKEN:
-                        setAlertErrorCode(ResetPasswordErrorCode.INVALID_TOKEN);
-                        break;
+                if (response.data.error.code == FormErrorCode.UNKNOWN_ERROR) {
+                    props.setError(FormErrorCode.UNKNOWN_ERROR, response.data.error.details);
+                } else {
+                    props.setError(response.data.error.code, null);
                 }
-            } else {
-                setAlertErrorCode(ResetPasswordErrorCode.UNKNOWN_ERROR);
             }
         })
     }
@@ -111,19 +92,9 @@ export default function ResetPassword(props: Props) {
                         {passwordHasChanged ? "Demande envoyée" : "Changer mon mot de passe"}
                     </Button>
                 </Form>
-
-                {
-                    alertErrorCode &&
-                    <FormAlert setPasswordError={alertErrorCode}
-                               clearAlert={clearAlert}/>
-                }
             </div>
         )
     }
 
-    return (
-        <MainContainer heading={"Nouveau mot de passe"}>
-            {renderContent()}
-        </MainContainer>
-    )
+    return renderContent();
 }

@@ -5,9 +5,10 @@ import './App.css';
 import Login from "./components/Login";
 import Error404 from "./components/Error404";
 import RequestPasswordRecovery from "./components/RequestPasswordRecovery";
-import RecoverPassword from "./components/ResetPassword";
+import ResetPassword from "./components/ResetPassword";
 import FakeAdmin from "./components/FakeAdmin";
-import ChangePassword from "./components/ChangePassword";
+import ChangePasswordForm from "./components/ChangePassword";
+import MainContainer from "./components/MainContainer";
 
 const App: React.FC = () => {
     return (
@@ -15,22 +16,32 @@ const App: React.FC = () => {
             <div className="App">
                 <Switch>
                     <Route path="/connexion/:audience">
-                        <Login endpoint="http://localhost:8100/api/v1/login/"/>
+                        <MainContainer heading={<>Connexion</>}>
+                            <Login endpoint="http://localhost:8100/api/v1/login/"/>
+                        </MainContainer>
                     </Route>
                     <Route path="/mot-de-passe/oubli">
-                        <RequestPasswordRecovery endpoint="http://localhost:8100/api/v1/password/recover/request/"/>
+                        <MainContainer heading="Mot de passe oublié"
+                                       content={RequestPasswordRecovery}
+                                       endpoint="http://localhost:8100/api/v1/password/recover/request/"/>
                     </Route>
                     <Route path="/mot-de-passe/nouveau/:token">
-                        <RecoverPassword endpoint="http://localhost:8100/api/v1/password/recover/reset/"/>
+                        <MainContainer heading="Nouveau mot de passe"
+                                       content={ResetPassword}
+                                       endpoint="http://localhost:8100/api/v1/password/recover/reset/"/>
                     </Route>
                     <Route path="/mot-de-passe/changer/">
-                        <ChangePassword endpoint="http://localhost:8100/api/v1/password/change/"/>
+                        <MainContainer heading="Changemement de mot de passe"
+                                       content={ChangePasswordForm}
+                                       endpoint="http://localhost:8100/api/v1/password/change/"/>
                     </Route>
                     <Route path="/admin">
-                        <FakeAdmin/>
+                        <MainContainer heading="Administration"
+                                       content={FakeAdmin}/>
                     </Route>
                     <Route path="/404">
-                        <Error404/>
+                        <MainContainer heading="404."
+                                       content={Error404}/>
                     </Route>
                     <Route path="*">
                         <Redirect to="/404"/>

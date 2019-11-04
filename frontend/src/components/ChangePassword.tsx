@@ -6,19 +6,15 @@ import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
 import {Link} from "react-router-dom"
 
-import FormAlert from "./FormAlert";
-import MainContainer from "./MainContainer";
 import {getUsernamePlaceholder} from "./placeholders";
 import PasswordFormHeadParagraph from "./PasswordFormHeadParagraph";
+import {FormErrorCode} from "./FormAlert";
 
-export enum ChangePasswordErrorCode {
-    INVALID_CREDENTIALS = "INVALID_CREDENTIALS",
-    WEAK_PASSWORD = "WEAK_PASSWORD",
-    UNKNOWN_ERROR = "UNKNOWN_ERROR",
-}
 
 type Props = {
     endpoint: string,
+    setError: (errorCode: null | FormErrorCode, errorDetails: null | string) => void,
+    clearError: () => void,
 };
 
 const usernamePlaceholder = getUsernamePlaceholder();
@@ -26,14 +22,7 @@ const oldPasswordPlaceholder = "Mot de passe actuel";
 const newPasswordPlaceholder = "Nouveau mot de passe";
 const newPasswordConfirmationPlaceholder = "Confirmation du nouveau mot de passe";
 
-export default function ChangePassword(props: Props) {
-    // The alert message at the bottom.
-    const [alertErrorCode, setAlertErrorCode] = useState<null | ChangePasswordErrorCode>(null);
-
-    function clearAlert() {
-        setAlertErrorCode(null);
-    }
-
+export default function ChangePasswordForm(props: Props) {
     // The form states.
     const [username, setUsername] = useState<string>("");
     const [oldPassword, setOldPassword] = useState<string>("");
@@ -44,6 +33,8 @@ export default function ChangePassword(props: Props) {
     const [passwordHasChanged, setPasswordChanged] = useState<boolean>(false);
 
     function handleChange(event: FormEvent<any>) {
+        props.clearError();
+
         const target = event.target as HTMLInputElement;
         const value = target.value;
 
@@ -61,9 +52,6 @@ export default function ChangePassword(props: Props) {
                 setNewPasswordConfirmation(value);
                 break;
         }
-
-        // Clear the alert if there is one.
-        clearAlert();
     }
 
     function handleSubmit(event: FormEvent<any>) {
@@ -82,26 +70,18 @@ export default function ChangePassword(props: Props) {
             const response = error.response;
 
             if (response && response.status === 400) {
-                switch (response.data.error.type) {
-                    case ChangePasswordErrorCode.INVALID_CREDENTIALS:
-                        setAlertErrorCode(ChangePasswordErrorCode.INVALID_CREDENTIALS);
-                        break;
-                    case ChangePasswordErrorCode.WEAK_PASSWORD:
-                        setAlertErrorCode(ChangePasswordErrorCode.WEAK_PASSWORD);
-                        break;
-                    default:
-                        setAlertErrorCode(ChangePasswordErrorCode.UNKNOWN_ERROR);
-                        break;
+                if (response.data.error.code == FormErrorCode.UNKNOWN_ERROR) {
+                    props.setError(FormErrorCode.UNKNOWN_ERROR, response.data.error.details);
+                } else {
+                    props.setError(response.data.error.code, null);
                 }
-            } else {
-                setAlertErrorCode(ChangePasswordErrorCode.UNKNOWN_ERROR);
             }
         })
     }
 
     function renderContent() {
         return (
-            <div className="LoginForm">
+            <div className="ChangePasswordForm">
                 <PasswordFormHeadParagraph passwordHasChanged={passwordHasChanged}/>
 
                 <Form onSubmit={handleSubmit}>
@@ -186,19 +166,9 @@ export default function ChangePassword(props: Props) {
                 <p>
                     <Link to="/mot-de-passe/oubli">Mot de passe oublié ?</Link>
                 </p>
-
-                {
-                    alertErrorCode &&
-                    <FormAlert changePasswordError={alertErrorCode}
-                               clearAlert={clearAlert}/>
-                }
             </div>
         )
     }
 
-    return (
-        <MainContainer heading="Changemement de mot de passe">
-            {renderContent()}
-        </MainContainer>
-    )
+    return renderContent();
 }

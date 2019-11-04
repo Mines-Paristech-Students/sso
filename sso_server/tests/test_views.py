@@ -30,7 +30,7 @@ class TestLogin(BaseTestCase):
         self.post(self.endpoint, payload)
         self.assertStatusCode(401)
         self.assertResponseDataEqual(
-            {"error": {"type": "INVALID_CREDENTIALS", "detail": ""}}
+            {"error": {"code": "INVALID_CREDENTIALS", "details": ""}}
         )
 
     def test_bad_password(self):
@@ -42,7 +42,7 @@ class TestLogin(BaseTestCase):
         self.post(self.endpoint, payload)
         self.assertStatusCode(401)
         self.assertResponseDataEqual(
-            {"error": {"type": "INVALID_CREDENTIALS", "detail": ""}}
+            {"error": {"code": "INVALID_CREDENTIALS", "details": ""}}
         )
 
     def test_unknown_audience(self):
@@ -50,7 +50,7 @@ class TestLogin(BaseTestCase):
         self.post(self.endpoint, payload)
         self.assertStatusCode(401)
         self.assertResponseDataEqual(
-            {"error": {"type": "INVALID_AUDIENCE", "detail": ""}}
+            {"error": {"code": "INVALID_AUDIENCE", "details": ""}}
         )
 
     def test_unauthorized_audience(self):
@@ -58,14 +58,14 @@ class TestLogin(BaseTestCase):
         self.post(self.endpoint, payload)
         self.assertStatusCode(401)
         self.assertResponseDataEqual(
-            {"error": {"type": "INVALID_AUDIENCE", "detail": ""}}
+            {"error": {"code": "INVALID_AUDIENCE", "details": ""}}
         )
 
         payload = {"username": "17rezal", "password": "password", "audience": "portail"}
         self.post(self.endpoint, payload)
         self.assertStatusCode(401)
         self.assertResponseDataEqual(
-            {"error": {"type": "INVALID_AUDIENCE", "detail": ""}}
+            {"error": {"code": "INVALID_AUDIENCE", "details": ""}}
         )
 
     def test_successful_login(self):
@@ -101,14 +101,16 @@ class TestRequestPasswordRecovery(BaseTestCase):
             self.post(self.endpoint, payload)
             self.assertStatusCode(400)
             self.assertResponseDataEqual(
-                {"error": {"type": "INVALID_EMAIL", "detail": ""}}
+                {"error": {"code": "INVALID_EMAIL", "details": ""}}
             )
 
     def test_unknown_email(self):
         payload = {"email": "17unknown@mpt.fr"}
         self.post(self.endpoint, payload)
         self.assertStatusCode(400)
-        self.assertResponseDataEqual({"error": {"type": "INVALID_EMAIL", "detail": ""}})
+        self.assertResponseDataEqual(
+            {"error": {"code": "INVALID_EMAIL", "details": ""}}
+        )
 
     def test_successful_request(self):
         payload = {"email": "17admin@mpt.fr"}
@@ -158,14 +160,16 @@ class TestResetPassword(BaseTestCase):
             self.post(self.endpoint, payload)
             self.assertStatusCode(400)
             self.assertResponseDataEqual(
-                {"error": {"type": "INVALID_TOKEN", "detail": ""}}
+                {"error": {"code": "INVALID_TOKEN", "details": ""}}
             )
 
     def test_weak_password(self):
         payload = {"token": self.get_token(), "password": "short"}
         self.post(self.endpoint, payload)
         self.assertStatusCode(400)
-        self.assertResponseDataEqual({"error": {"type": "WEAK_PASSWORD", "detail": ""}})
+        self.assertResponseDataEqual(
+            {"error": {"code": "WEAK_PASSWORD", "details": ""}}
+        )
         self.assertIsNotNone(authenticate(username="17admin", password="password"))
 
     def test_can_set_password(self):
@@ -209,7 +213,7 @@ class TestChangePassword(BaseTestCase):
         self.post(self.endpoint, payload)
         self.assertStatusCode(400)
         self.assertResponseDataEqual(
-            {"error": {"type": "INVALID_CREDENTIALS", "detail": ""}}
+            {"error": {"code": "INVALID_CREDENTIALS", "details": ""}}
         )
 
     def test_bad_password(self):
@@ -221,7 +225,7 @@ class TestChangePassword(BaseTestCase):
         self.post(self.endpoint, payload)
         self.assertStatusCode(400)
         self.assertResponseDataEqual(
-            {"error": {"type": "INVALID_CREDENTIALS", "detail": ""}}
+            {"error": {"code": "INVALID_CREDENTIALS", "details": ""}}
         )
         self.assertIsNotNone(authenticate(username="17admin", password="password"))
         self.assertIsNone(authenticate(username="17admin", password="passwordpassword"))
@@ -234,7 +238,9 @@ class TestChangePassword(BaseTestCase):
         }
         self.post(self.endpoint, payload)
         self.assertStatusCode(400)
-        self.assertResponseDataEqual({"error": {"type": "WEAK_PASSWORD", "detail": ""}})
+        self.assertResponseDataEqual(
+            {"error": {"code": "WEAK_PASSWORD", "details": ""}}
+        )
         self.assertIsNotNone(authenticate(username="17admin", password="password"))
         self.assertIsNone(authenticate(username="17admin", password="short"))
 

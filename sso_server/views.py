@@ -30,15 +30,15 @@ class LoginView(views.APIView):
         Return 401 and:
         {
             "error": {
-                "type": "",
-                "detail": ""
+                "code": "",
+                "details": ""
             }
         }
 
-        The type of the error can be:
+        The code of the error can be:
             * INVALID_CREDENTIALS if username or password are missing or cannot authenticate an user.
             * INVALID_AUDIENCE if audience is missing or the user is not allowed to access the audience.
-            * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
+            * UNKNOWN_ERROR for another error. In that case, details will contain more information about the error.
 
     Success:
         Return 200 and:
@@ -55,26 +55,26 @@ class LoginView(views.APIView):
 
         if not serializer.is_valid():
             if "non_field_errors" in serializer.errors:
-                error_type = serializer.errors["non_field_errors"][0]
+                error_code = serializer.errors["non_field_errors"][0]
 
-                if error_type in ("INVALID_AUDIENCE", "INVALID_CREDENTIALS"):
+                if error_code in ("INVALID_AUDIENCE", "INVALID_CREDENTIALS"):
                     return Response(
-                        {"error": {"type": error_type, "detail": ""}},
+                        {"error": {"code": error_code, "details": ""}},
                         status=status.HTTP_401_UNAUTHORIZED,
                     )
             elif "audience" in serializer.errors:
                 return Response(
-                    {"error": {"type": "INVALID_AUDIENCE", "detail": ""}},
+                    {"error": {"code": "INVALID_AUDIENCE", "details": ""}},
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
             elif "username" in serializer.errors or "password" in serializer.errors:
                 return Response(
-                    {"error": {"type": "INVALID_CREDENTIALS", "detail": ""}},
+                    {"error": {"code": "INVALID_CREDENTIALS", "details": ""}},
                     status=status.HTTP_401_UNAUTHORIZED,
                 )
 
             return Response(
-                {"error": {"type": "UNKNOWN_ERROR", "detail": serializer.errors}},
+                {"error": {"code": "UNKNOWN_ERROR", "details": serializer.errors}},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
@@ -116,14 +116,14 @@ class RequestPasswordRecoveryView(views.APIView):
         Return 400 and:
         {
             "error": {
-                "type": "",
-                "detail": ""
+                "code": "",
+                "details": ""
             }
         }
 
-        The type of the error can be:
+        The code of the error can be:
             * INVALID_EMAIL: if email is missing or does not appear in the database (including if it is ill-formatted).
-            * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
+            * UNKNOWN_ERROR for another error. In that case, details will contain more information about the error.
 
     Success:
         Return 204 (no content).
@@ -133,7 +133,7 @@ class RequestPasswordRecoveryView(views.APIView):
     authentication_classes = ()
 
     INVALID_EMAIL_ERROR = Response(
-        {"error": {"type": "INVALID_EMAIL", "detail": ""}},
+        {"error": {"code": "INVALID_EMAIL", "details": ""}},
         status=status.HTTP_400_BAD_REQUEST,
     )
 
@@ -180,15 +180,15 @@ class ResetPasswordView(views.APIView):
         Return 400 and:
         {
             "error": {
-                "type": "",
-                "detail": ""
+                "code": "",
+                "details": ""
             }
         }
 
-        The type of the error can be:
+        The code of the error can be:
             * WEAK_PASSWORD if the password is too weak.
             * INVALID_TOKEN if the token does not exist in the database or has expired.
-            * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
+            * UNKNOWN_ERROR for another error. In that case, details will contain more information about the error.
 
     Success:
          Return 204 (no content).
@@ -203,17 +203,17 @@ class ResetPasswordView(views.APIView):
         if not serializer.is_valid():
             if "token" in serializer.errors:
                 return Response(
-                    {"error": {"type": "INVALID_TOKEN", "detail": ""}},
+                    {"error": {"code": "INVALID_TOKEN", "details": ""}},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             elif "password" in serializer.errors:
                 return Response(
-                    {"error": {"type": "WEAK_PASSWORD", "detail": ""}},
+                    {"error": {"code": "WEAK_PASSWORD", "details": ""}},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
             return Response(
-                {"error": {"type": "UNKNOWN_ERROR", "detail": serializer.errors}},
+                {"error": {"code": "UNKNOWN_ERROR", "details": serializer.errors}},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -246,15 +246,15 @@ class ChangePasswordView(views.APIView):
             Return 400 and:
             {
                 "error": {
-                    "type": "",
-                    "detail": ""
+                    "code": "",
+                    "details": ""
                 }
             }
 
-            The type of the error can be:
+            The code of the error can be:
                 * WEAK_PASSWORD if the password is too weak.
                 * INVALID_CREDENTIALS if the pair username / password does not exist in the database.
-                * UNKNOWN_ERROR for another error. In that case, detail will contain more information about the error.
+                * UNKNOWN_ERROR for another error. In that case, details will contain more information about the error.
 
         Success:
              Return 204 (no content).
@@ -269,12 +269,12 @@ class ChangePasswordView(views.APIView):
         if not serializer.is_valid():
             if "old_password" in serializer.errors or "username" in serializer.errors:
                 return Response(
-                    {"error": {"type": "INVALID_CREDENTIALS", "detail": ""}},
+                    {"error": {"code": "INVALID_CREDENTIALS", "details": ""}},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             elif "new_password" in serializer.errors:
                 return Response(
-                    {"error": {"type": "WEAK_PASSWORD", "detail": ""}},
+                    {"error": {"code": "WEAK_PASSWORD", "details": ""}},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             elif "non_field_errors" in serializer.errors:
@@ -282,12 +282,12 @@ class ChangePasswordView(views.APIView):
 
                 if error in ("INVALID_CREDENTIALS", "WEAK_PASSWORD"):
                     return Response(
-                        {"error": {"type": error, "detail": ""}},
+                        {"error": {"code": error, "details": ""}},
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
             return Response(
-                {"error": {"type": "UNKNOWN_ERROR", "detail": serializer.errors}},
+                {"error": {"code": "UNKNOWN_ERROR", "details": serializer.errors}},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

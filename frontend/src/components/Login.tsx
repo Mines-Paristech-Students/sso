@@ -4,20 +4,15 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
-import {Link, useParams, Redirect} from "react-router-dom"
+import {Link, Redirect, useParams} from "react-router-dom"
 
-import FormAlert from "./FormAlert";
-import MainContainer from "./MainContainer";
+import {FormErrorCode} from "./FormAlert";
 import {getUsernamePlaceholder} from "./placeholders";
-
-export enum LoginErrorCode {
-    INVALID_CREDENTIALS = "INVALID_CREDENTIALS",
-    INVALID_AUDIENCE = "INVALID_AUDIENCE",
-    UNKNOWN_ERROR = "UNKNOWN_ERROR",
-}
 
 type LoginProps = {
     endpoint: string,
+    setError: (errorCode: null | FormErrorCode, errorDetails: null | string) => void,
+    clearError: () => void,
 };
 
 const usernamePlaceholder = getUsernamePlaceholder();
@@ -27,18 +22,13 @@ export default function Login(props: LoginProps) {
     // The audience GET parameter.
     let {audience} = useParams();
 
-    // The alert message at the bottom.
-    const [alertErrorCode, setAlertErrorCode] = useState<null | LoginErrorCode>(null);
-
-    function clearAlert() {
-        setAlertErrorCode(null);
-    }
-
     // The form states.
-    const [username, setUsername] = useState<string>("")
+    const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
     function handleChange(event: FormEvent<any>) {
+        props.clearError();
+
         const target = event.target as HTMLInputElement;
         const value = target.value;
 
@@ -50,9 +40,6 @@ export default function Login(props: LoginProps) {
                 setPassword(value);
                 break;
         }
-
-        // Clear the alert if there is one.
-        clearAlert();
     }
 
     function handleSubmit(event: FormEvent<any>) {
@@ -71,19 +58,11 @@ export default function Login(props: LoginProps) {
             const response = error.response;
 
             if (response && response.status === 401) {
-                switch (response.data.error.type) {
-                    case LoginErrorCode.INVALID_CREDENTIALS:
-                        setAlertErrorCode(LoginErrorCode.INVALID_CREDENTIALS);
-                        break;
-                    case LoginErrorCode.INVALID_AUDIENCE:
-                        setAlertErrorCode(LoginErrorCode.INVALID_AUDIENCE);
-                        break;
-                    default:
-                        setAlertErrorCode(LoginErrorCode.UNKNOWN_ERROR);
-                        break;
+                if (response.data.error.code == FormErrorCode.UNKNOWN_ERROR) {
+                    props.setError(FormErrorCode.UNKNOWN_ERROR, response.data.error.details);
+                } else {
+                    props.setError(response.data.error.code, null);
                 }
-            } else {
-                setAlertErrorCode(LoginErrorCode.UNKNOWN_ERROR);
             }
         })
     }
@@ -149,19 +128,9 @@ export default function Login(props: LoginProps) {
                 <p>
                     <Link to="/mot-de-passe/oubli">Mot de passe oublié ?</Link>
                 </p>
-
-                {
-                    alertErrorCode &&
-                    <FormAlert loginError={alertErrorCode}
-                               clearAlert={clearAlert}/>
-                }
             </div>
         )
     }
 
-    return (
-        <MainContainer heading={<>Connexion {renderAudienceName()}</>}>
-            {renderContent()}
-        </MainContainer>
-    )
+    return renderContent();
 }

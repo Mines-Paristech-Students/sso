@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Image from "react-bootstrap/Image";
 import logoMines from "../static/logo_mines.png";
+import FormAlert, {FormErrorCode} from "./FormAlert";
 
 type Props = {
     heading?: any,
@@ -9,6 +10,24 @@ type Props = {
 
 
 export default function MainContainer(props: Props) {
+    /**
+     * Displays a heading, a content and an alert bar for displaying errors.
+     * Provides an endpoint to the content, as well as functions to set and clear errors.
+     */
+
+    const [errorCode, setErrorCode] = useState<null | FormErrorCode>(null);
+    const [errorDetails, setErrorDetails] = useState<null | string>(null);
+
+    function clearError() {
+        setErrorCode(null);
+        setErrorDetails(null);
+    }
+
+    function setError(errorCode: null | FormErrorCode, errorDetails: null | string) {
+        setErrorCode(errorCode);
+        setErrorDetails(errorDetails);
+    }
+
     return (
         <div className="MainContainer">
             {
@@ -20,8 +39,17 @@ export default function MainContainer(props: Props) {
             }
 
             <div className="content">
-                {props.children}
+                {
+                        props.children(setError, clearError)
+                }
             </div>
+
+            {
+                errorCode &&
+                <FormAlert errorCode={errorCode}
+                           errorDetails={errorDetails}
+                           clearError={clearError}/>
+            }
         </div>
     )
 }
