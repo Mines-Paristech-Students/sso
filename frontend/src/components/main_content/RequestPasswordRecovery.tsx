@@ -6,8 +6,9 @@ import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
 
 import {Link} from "react-router-dom";
-import {FormErrorCode} from "./FormAlert";
+import {FormErrorCode} from "./ErrorBar";
 import {getEmailPlaceholder} from "./placeholders";
+import Heading from "../Heading";
 
 type Props = {
     endpoint: string,
@@ -74,7 +75,9 @@ export default function RequestPasswordRecovery(props: Props) {
         const buttonText = emailSent ? "Demande envoyée" : "Demander un nouveau mot de passe";
 
         return (
-            <div className="ForgottenPasswordForm">
+            <>
+                <Heading heading="Demander un nouveau mot de passe"/>
+
                 {paragraph}
 
                 <Form onSubmit={handleSubmit}>
@@ -103,7 +106,7 @@ export default function RequestPasswordRecovery(props: Props) {
                         {buttonText}
                     </Button>
                 </Form>
-            </div>
+            </>
         )
     }
 

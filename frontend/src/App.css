@@ -27,30 +27,30 @@ header h1 .audience-name {
     font-weight: normal;
 }
 
-.MainContainer .content {
+.main-content .content {
     margin-top: 20px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.MainContainer form {
+.main-content form {
     padding: 10px;
     font-size: 26px;
 }
 
-.MainContainer form input {
+.main-content form input {
     font-size: 26px;
 }
 
-.MainContainer form button {
+.main-content form button {
     font-size: 20px;
 }
 
-.MainContainer form .submit-button {
+.main-content form .submit-button {
     margin-top: 20px;
 }
 
-.MainContainer form label {
+.main-content form label {
     display: none;
     text-align: right;
 }
@@ -77,19 +77,19 @@ header h1 .audience-name {
         font-size: 24px;
     }
 
-    .MainContainer form {
+    .main-content form {
         font-size: 14px;
     }
 
-    .MainContainer form input {
+    .main-content form input {
         font-size: 14px;
     }
 
-    .MainContainer form button {
+    .main-content form button {
         font-size: 14px;
     }
 
-    .MainContainer .form-label {
+    .main-content .form-label {
         text-align: center;
     }
 }

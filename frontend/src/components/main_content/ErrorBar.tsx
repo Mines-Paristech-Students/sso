@@ -18,7 +18,7 @@ type Props = {
     clearError: () => void
 };
 
-export default function FormAlert(props: Props) {
+export default function ErrorBar(props: Props) {
     function getAlertContent() {
         switch (props.errorCode) {
             case FormErrorCode.INVALID_AUDIENCE:

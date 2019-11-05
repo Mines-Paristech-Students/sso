@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import Button from "react-bootstrap/Button";
+import Heading from "./Heading";
 
 export default function FakeAdmin() {
     /**
@@ -10,6 +11,8 @@ export default function FakeAdmin() {
 
     return (
         <>
+            <Heading heading="Administration"/>
+
             <Button variant="outline-danger"
                     onClick={() => setButtonPushed(true)}>
                 Passer en maintenance

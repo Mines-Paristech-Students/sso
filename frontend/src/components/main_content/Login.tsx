@@ -6,8 +6,9 @@ import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
 import {Link, Redirect, useParams} from "react-router-dom"
 
-import {FormErrorCode} from "./FormAlert";
+import {FormErrorCode} from "./ErrorBar";
 import {getUsernamePlaceholder} from "./placeholders";
+import Heading from "../Heading";
 
 type LoginProps = {
     endpoint: string,
@@ -58,11 +59,13 @@ export default function Login(props: LoginProps) {
             const response = error.response;
 
             if (response && response.status === 401) {
-                if (response.data.error.code == FormErrorCode.UNKNOWN_ERROR) {
+                if (response.data.error.code === FormErrorCode.UNKNOWN_ERROR) {
                     props.setError(FormErrorCode.UNKNOWN_ERROR, response.data.error.details);
                 } else {
                     props.setError(response.data.error.code, null);
                 }
+            } else {
+                props.setError(FormErrorCode.UNKNOWN_ERROR, null)
             }
         })
     }
@@ -84,7 +87,9 @@ export default function Login(props: LoginProps) {
         }
 
         return (
-            <div className="LoginForm">
+            <>
+                <Heading heading={<>Connexion {renderAudienceName()}</>}/>
+
                 <Form onSubmit={handleSubmit}>
                     <Form.Group as={Col} xs={{span: 12}} lg={{span: 6, offset: 3}} controlId="formUsername">
                         <Form.Label>Nom d’utilisateur</Form.Label>
@@ -128,7 +133,7 @@ export default function Login(props: LoginProps) {
                 <p>
                     <Link to="/mot-de-passe/oubli">Mot de passe oublié ?</Link>
                 </p>
-            </div>
+            </>
         )
     }
 

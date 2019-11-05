@@ -8,7 +8,8 @@ import {Link} from "react-router-dom"
 
 import {getUsernamePlaceholder} from "./placeholders";
 import PasswordFormHeadParagraph from "./PasswordFormHeadParagraph";
-import {FormErrorCode} from "./FormAlert";
+import {FormErrorCode} from "./ErrorBar";
+import Heading from "../Heading";
 
 
 type Props = {
@@ -81,7 +82,9 @@ export default function ChangePasswordForm(props: Props) {
 
     function renderContent() {
         return (
-            <div className="ChangePasswordForm">
+            <>
+                <Heading heading="Changer de mot de passe"/>
+
                 <PasswordFormHeadParagraph passwordHasChanged={passwordHasChanged}/>
 
                 <Form onSubmit={handleSubmit}>
@@ -166,7 +169,7 @@ export default function ChangePasswordForm(props: Props) {
                 <p>
                     <Link to="/mot-de-passe/oubli">Mot de passe oublié ?</Link>
                 </p>
-            </div>
+            </>
         )
     }
 

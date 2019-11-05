@@ -5,8 +5,9 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import InputGroup from "react-bootstrap/InputGroup";
 import {useParams} from "react-router";
-import {FormErrorCode} from "./FormAlert";
+import {FormErrorCode} from "./ErrorBar";
 import PasswordFormHeadParagraph from "./PasswordFormHeadParagraph";
+import Heading from "../Heading";
 
 type Props = {
     endpoint: string,
@@ -63,7 +64,9 @@ export default function ResetPassword(props: Props) {
 
     function renderContent() {
         return (
-            <div className="NewPasswordForm">
+            <>
+                <Heading heading="Nouveau mot de passe"/>
+
                 <PasswordFormHeadParagraph passwordHasChanged={passwordHasChanged}/>
 
                 <Form onSubmit={handleSubmit}>
@@ -92,7 +95,7 @@ export default function ResetPassword(props: Props) {
                         {passwordHasChanged ? "Demande envoyée" : "Changer mon mot de passe"}
                     </Button>
                 </Form>
-            </div>
+            </>
         )
     }
 
