@@ -20,4 +20,4 @@ jobs:
         run: pip install black==19.10b0
 
       - name: Run Black
-        run: black --check backend
+        run: black --check .
