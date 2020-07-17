@@ -163,7 +163,7 @@ class RequestPasswordRecoveryView(views.APIView):
         if not serializer.is_valid():
             return self.INVALID_EMAIL_ERROR
 
-        passwordrecovery = serializer.save(user=user)
+        password_recovery = serializer.save(user=user)
 
         # SEND THE EMAIL
         email_server = EmailSender("Rezal")
