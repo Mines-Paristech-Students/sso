@@ -22,8 +22,8 @@ class EmailSender:
 
     def sendemail(self, to, subject, text, cc=None, bcc=None, attachment=None, attachments=None, template=False, template_file_path=None, **kwargs):
         msg = MIMEMultipart('alternative')
-        msg['Subject'] = "[Rezal] {}".format(subject)
-        msg['From'] = '{} <{}>'.format(self.name, self.account)
+        msg['Subject'] = f"[Rezal] {subject}"
+        msg['From'] = f'{self.name} <{self.account}>'
         msg['To'] = to
         destinations = [email.strip() for email in to.split(',')]
         if cc is not None:
