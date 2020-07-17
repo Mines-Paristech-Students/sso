@@ -97,7 +97,7 @@ EMAIL = {
     "ADDRESS": env.str("EMAIL_ADDRESS"),
     "PASSWORD": env.str("EMAIL_PASSWORD"),
     "HOST": env.str("EMAIL_HOST"),
-    "PORT": env.str("EMAIL_PORT")
+    "PORT": env.str("EMAIL_PORT"),
 }
 
 FRONTEND_HOST = env.str("FRONTEND_HOST")

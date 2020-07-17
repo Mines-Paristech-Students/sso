@@ -154,8 +154,8 @@ class RequestPasswordRecoveryView(views.APIView):
         except ObjectDoesNotExist:
             return self.INVALID_EMAIL_ERROR
 
-            # Cancel other PasswordRecovery
-            PasswordRecovery.objects.all().update(used=1)
+        # Cancel other PasswordRecovery
+        PasswordRecovery.objects.filter(user=user).update(used=1)
 
         # Create a PasswordRecovery.
         serializer = PasswordRecoverySerializer(data={"user": user.email})
@@ -168,8 +168,11 @@ class RequestPasswordRecoveryView(views.APIView):
         # SEND THE EMAIL
         email_server = EmailSender("Rezal")
         email_server.connect()
-        email_server.send_passwordrecovery_link(user.email, user.first_name + " " + user.last_name,
-                                                str(passwordrecovery.id))
+        email_server.send_password_recovery_link(
+            user.email,
+            user.first_name + " " + user.last_name,
+            str(password_recovery.id),
+        )
         email_server.close()
 
         # Return nothing.

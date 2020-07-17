@@ -20,18 +20,30 @@ class EmailSender:
         pw = settings.EMAIL["PASSWORD"]
         self.smtp.login(self.account, pw)
 
-    def sendemail(self, to, subject, text, cc=None, bcc=None, attachment=None, attachments=None, template=False, template_file_path=None, **kwargs):
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = f"[Rezal] {subject}"
-        msg['From'] = f'{self.name} <{self.account}>'
-        msg['To'] = to
-        destinations = [email.strip() for email in to.split(',')]
+    def sendemail(
+        self,
+        to,
+        subject,
+        text,
+        cc=None,
+        bcc=None,
+        attachment=None,
+        attachments=None,
+        template=False,
+        template_file_path=None,
+        **kwargs,
+    ):
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"[Rezal] {subject}"
+        msg["From"] = f"{self.name} <{self.account}>"
+        msg["To"] = to
+        destinations = [email.strip() for email in to.split(",")]
         if cc is not None:
-            msg['Cc'] = cc
-            destinations += [email.strip() for email in cc.split(',')]
+            msg["Cc"] = cc
+            destinations += [email.strip() for email in cc.split(",")]
         if bcc is not None:
-            msg['Bcc'] = bcc
-            destinations += [email.strip() for email in bcc.split(',')]
+            msg["Bcc"] = bcc
+            destinations += [email.strip() for email in bcc.split(",")]
 
         if template and template_file_path:
             with open(template_file_path) as template_file:
@@ -40,29 +52,35 @@ class EmailSender:
         else:
             content = text
 
-        msg.attach(MIMEText(content, 'html'))
+        msg.attach(MIMEText(content, "html"))
         if attachment is not None:
-            part = MIMEApplication(
-                attachment[0].read(),
-                Name=attachment[1]
-            )
-            part['Content-Disposition'] = 'attachment; filename="{}"'.format(attachment[1])
+            part = MIMEApplication(attachment[0].read(), Name=attachment[1])
+            part["Content-Disposition"] = f'attachment; filename="{attachment[1]}"'
             msg.attach(part)
         if attachments is not None:
             for attachment in attachments:
-                part = MIMEApplication(
-                    attachment[0].read(),
-                    Name=attachment[1])
-                part['Content-Disposition'] = 'attachment; filename="{}"'.format(attachment[1])
+                part = MIMEApplication(attachment[0].read(), Name=attachment[1])
+                part["Content-Disposition"] = f'attachment; filename="{attachment[1]}"'
                 msg.attach(part)
         if len(to) > 0:
             self.smtp.sendmail(self.account, destinations, msg.as_string())
 
-    def send_passwordrecovery_link(self, user_address, name, passwordrecovery_id):
-        link = settings.FRONTEND_HOST + "/mot-de-passe/nouveau/" + passwordrecovery_id
-        text = "Cliquez sur ce lien pour réinitialiser votre mot de passe : " + link
-        self.sendemail(to=user_address, subject="Nouveau mot de passe",text = text, cc=None, bcc=None, attachment=None, attachments=None, template=True,
-                  template_file_path="sso_server/email_template/passwordRecovery.html", name=name, link=link)
+    def send_password_recovery_link(self, user_address, name, password_recovery_id):
+        link = settings.FRONTEND_HOST + "/mot-de-passe/nouveau/" + password_recovery_id
+        text = "Cliquez sur ce lien pour reéinitialiser votre mot de passe : " + link
+        self.sendemail(
+            to=user_address,
+            subject="Nouveau mot de passe",
+            text=text,
+            cc=None,
+            bcc=None,
+            attachment=None,
+            attachments=None,
+            template=True,
+            template_file_path="sso_server/email_template/password_recovery.html",
+            name=name,
+            link=link,
+        )
 
     def close(self):
         self.smtp.quit()
