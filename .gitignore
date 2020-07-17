@@ -9,3 +9,6 @@ sso_server/migrations/
 .env
 
 volumes
+
+# PYENV
+.python-version
