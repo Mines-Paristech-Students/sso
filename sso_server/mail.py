@@ -77,7 +77,7 @@ class EmailSender:
             attachment=None,
             attachments=None,
             template=True,
-            template_file_path="sso_server/email_template/password_recovery.html",
+            template_file_path="sso_server/email_template/password_recovery_email_template.html.html",
             name=name,
             link=link,
         )
