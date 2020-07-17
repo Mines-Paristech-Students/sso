@@ -60,7 +60,7 @@ class EmailSender:
 
     def send_passwordrecovery_link(self, user_address, name, passwordrecovery_id):
         link = settings.FRONTEND_HOST + "/mot-de-passe/nouveau/" + passwordrecovery_id
-        text = "Cliquez sur ce lien pour reéinitialiser votre mot de passe : " + link
+        text = "Cliquez sur ce lien pour réinitialiser votre mot de passe : " + link
         self.sendemail(to=user_address, subject="Nouveau mot de passe",text = text, cc=None, bcc=None, attachment=None, attachments=None, template=True,
                   template_file_path="sso_server/email_template/passwordRecovery.html", name=name, link=link)
 
