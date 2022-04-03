@@ -7,9 +7,9 @@ from sso_server.token import create_token
 
 class BaseTestCase(APITestCase):
     """
-        This test base provides convenient `get`, `post`, etc. shortcut methods to the corresponding
-        `self.client.xxx` methods.
-        When using these methods, the URLs must be shortened from `/api/v1/some/endpoint/` to `/some/endpoint/`.
+    This test base provides convenient `get`, `post`, etc. shortcut methods to the corresponding
+    `self.client.xxx` methods.
+    When using these methods, the URLs must be shortened from `/api/v1/some/endpoint/` to `/some/endpoint/`.
     """
 
     api_base = "/api/v1"
