@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:10.0-alpine
+    container_name: sso_db
+    volumes:
+      - ./volumes:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=sso_local_db
+
+volumes:
+  postgres_data:
