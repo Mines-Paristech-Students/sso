@@ -1,95 +1,95 @@
 .App {
-    text-align: center;
+  text-align: center;
 }
 
 header {
-    margin-top: 20px;
-    margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 header .logoMines {
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
 
-    max-height: 80px;
+  max-height: 80px;
 }
 
 header h1 {
-    color: lightslategray;
+  color: lightslategray;
 
-    font-weight: lighter;
-    font-size: 38px;
+  font-weight: lighter;
+  font-size: 38px;
 }
 
 header h1 .audience-name {
-    color: darkslategray;
-    font-weight: normal;
+  color: darkslategray;
+  font-weight: normal;
 }
 
 .MainContainer .content {
-    margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
+  margin-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .MainContainer form {
-    padding: 10px;
-    font-size: 26px;
+  padding: 10px;
+  font-size: 26px;
 }
 
 .MainContainer form input {
-    font-size: 26px;
+  font-size: 26px;
 }
 
 .MainContainer form button {
-    font-size: 20px;
+  font-size: 20px;
 }
 
 .MainContainer form .submit-button {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .MainContainer form label {
-    display: none;
-    text-align: right;
+  display: none;
+  text-align: right;
 }
 
 .FormAlert {
-    width: 40%;
-    margin-top: 50px;
-    margin-left: auto;
-    margin-right: auto;
+  width: 40%;
+  margin-top: 50px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .troll {
-    margin-top: 50px;
-    text-align: center;
-    font-size: 50px;
+  margin-top: 50px;
+  text-align: center;
+  font-size: 50px;
 }
 
 @media (max-width: 992px) {
-    header .logoMines {
-        margin-bottom: 10px;
-    }
+  header .logoMines {
+    margin-bottom: 10px;
+  }
 
-    header h1 {
-        font-size: 24px;
-    }
+  header h1 {
+    font-size: 24px;
+  }
 
-    .MainContainer form {
-        font-size: 14px;
-    }
+  .MainContainer form {
+    font-size: 14px;
+  }
 
-    .MainContainer form input {
-        font-size: 14px;
-    }
+  .MainContainer form input {
+    font-size: 14px;
+  }
 
-    .MainContainer form button {
-        font-size: 14px;
-    }
+  .MainContainer form button {
+    font-size: 14px;
+  }
 
-    .MainContainer .form-label {
-        text-align: center;
-    }
+  .MainContainer .form-label {
+    text-align: center;
+  }
 }
