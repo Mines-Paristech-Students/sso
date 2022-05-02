@@ -8,4 +8,7 @@ sso_server/migrations/
 *.pyc
 .env
 
-volumes/
+volumes
+
+# PYENV
+.python-version
