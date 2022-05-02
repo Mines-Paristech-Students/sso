@@ -30,7 +30,7 @@ SECRET_KEY = env.str("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = ["localhost"] + [env.str("FRONTEND_HOST")] + ["127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"] + [env.str("PRODUCTION_DOMAIN")]
 
 # Application definition
 
@@ -57,7 +57,16 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ORIGIN_WHITELIST = ("http://localhost:3100",)
+PRODUCTION_URL = (
+    env.str("PRODUCTION_SUBDOMAIN") + "." + env.str("PRODUCTION_DOMAIN")
+    if env.str("PRODUCTION_SUBDOMAIN")
+    else env.str("PRODUCTION_DOMAIN")
+)
+CORS_ORIGIN_WHITELIST = (
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "http://" + PRODUCTION_URL,
+)
 
 ROOT_URLCONF = "sso.urls"
 
