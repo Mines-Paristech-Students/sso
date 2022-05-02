@@ -19,11 +19,11 @@ services:
     build:
       context: .
       dockerfile: docker/backend.Dockerfile
-    command: sh -c "./cli/create_and_populate_database.bash && python manage.py runserver 0.0.0.0:8100"
+    command: sh -c "./cli/create_and_populate_database.bash && python manage.py runserver 0.0.0.0:8001"
     volumes:
       - .:/code
     ports:
-      - "8100:8100"
+      - "8001:8001"
     links:
       - db:db
     restart: always
@@ -42,7 +42,7 @@ services:
       - './frontend:/app'
       - '/app/node_modules'
     ports:
-      - "3100:3000"
+      - "3001:3000"
     environment:
       - CHOKIDAR_USEPOLLING=true
     profiles: ["dev"]
@@ -52,7 +52,7 @@ services:
       context: frontend
       dockerfile: prod.Dockerfile
     ports:
-      - '3100:80'
+      - '3001:3001'
     profiles: ["prod"]
 
 volumes:
