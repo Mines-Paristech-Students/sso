@@ -30,7 +30,7 @@ SECRET_KEY = env.str("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"] + [env.str("PRODUCTION_DOMAIN")]
 
 # Application definition
 
@@ -57,7 +57,16 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-CORS_ORIGIN_WHITELIST = ("http://localhost:3000",)
+PRODUCTION_URL = (
+    env.str("PRODUCTION_SUBDOMAIN") + "." + env.str("PRODUCTION_DOMAIN")
+    if env.str("PRODUCTION_SUBDOMAIN")
+    else env.str("PRODUCTION_DOMAIN")
+)
+CORS_ORIGIN_WHITELIST = (
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    "https://" + PRODUCTION_URL,
+)
 
 ROOT_URLCONF = "sso.urls"
 
@@ -99,8 +108,6 @@ EMAIL = {
     "HOST": env.str("EMAIL_HOST"),
     "PORT": env.str("EMAIL_PORT"),
 }
-
-FRONTEND_HOST = env.str("FRONTEND_HOST")
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
