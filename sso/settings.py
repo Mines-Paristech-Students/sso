@@ -109,8 +109,6 @@ EMAIL = {
     "PORT": env.str("EMAIL_PORT"),
 }
 
-FRONTEND_HOST = env.str("FRONTEND_HOST")
-
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
