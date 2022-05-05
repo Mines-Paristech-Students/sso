@@ -30,7 +30,9 @@ SECRET_KEY = env.str("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"] + [env.str("PRODUCTION_DOMAIN")]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.20.1.20"] + [
+    env.str("PRODUCTION_DOMAIN")
+]
 
 # Application definition
 
@@ -65,6 +67,7 @@ PRODUCTION_URL = (
 CORS_ORIGIN_WHITELIST = (
     "http://localhost:3001",
     "http://127.0.0.1:3001",
+    "http://10.20.1.20:3001",
     "https://" + PRODUCTION_URL,
 )
 
