@@ -12,3 +12,6 @@ volumes
 
 # PYENV
 .python-version
+
+# Axios file with baseURL
+frontend/src/axios.js
