@@ -2,16 +2,58 @@ version: '3.7'
 
 services:
   db:
-    image: postgres:10.0-alpine
-    container_name: sso_db
+    build:
+      context: .
+      dockerfile: docker/db.Dockerfile
     volumes:
       - ./volumes:/var/lib/postgresql/data/
-    ports:
-      - 5432:5432
+    expose:
+      - "5432"
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=sso_local_db
+      - POSTGRES_DB=sso
+    profiles: ["dev", "prod"]
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    command: sh -c "./cli/create_and_populate_database.bash && python manage.py runserver 0.0.0.0:8001"
+    volumes:
+      - .:/code
+    ports:
+      - "8001:8001"
+    links:
+      - db:db
+    restart: always
+    environment:
+      - DATABASE_HOST=db
+    depends_on:
+      - db
+    profiles: ["dev", "prod"]
+
+  frontend-dev:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    command: npm start
+    volumes:
+      - './frontend:/app'
+      - '/app/node_modules'
+    ports:
+      - "3001:3000"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    profiles: ["dev"]
+
+  frontend-prod:
+    build:
+      context: frontend
+      dockerfile: prod.Dockerfile
+    ports:
+      - '3001:3001'
+    profiles: ["prod"]
 
 volumes:
   postgres_data:

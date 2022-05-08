@@ -19,13 +19,13 @@ const App: React.FC = () => {
       <div className="App">
         <Switch>
           <Route path="/connexion/:audience">
-            <Login endpoint="http://localhost:8100/api/v1/login/" />
+            <Login endpoint="/api/v1/login/" />
           </Route>
           <Route path="/mot-de-passe/oubli">
-            <RequestPasswordRecovery endpoint="http://localhost:8100/api/v1/password/recover/request/" />
+            <RequestPasswordRecovery endpoint="/api/v1/password/recover/request/" />
           </Route>
           <Route path="/mot-de-passe/nouveau/:token">
-            <RecoverPassword endpoint="http://localhost:8100/api/v1/password/recover/reset/" />
+            <RecoverPassword endpoint="/api/v1/password/recover/reset/" />
           </Route>
           <Route path="/admin">
             <FakeAdmin />
