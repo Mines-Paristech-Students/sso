@@ -25,7 +25,12 @@ const passwordPlaceholder = "Mot de passe";
 
 export default function Login(props: LoginProps) {
   // The audience GET parameter.
-  let { audience } = useParams();
+  let { audience } = useParams<{ audience: string | undefined }>();
+
+  const redirectionUrls: Record<string, string | undefined> = {
+    rezal: process.env.REACT_APP_REZAL_URL,
+    portail: process.env.REACT_APP_PORTAIL_URL,
+  };
 
   // The alert message at the bottom.
   const [alertErrorCode, setAlertErrorCode] = useState<null | LoginErrorCode>(
@@ -66,8 +71,18 @@ export default function Login(props: LoginProps) {
         password: password,
         audience: audience,
       })
-      .then((value) => {
-        window.location = value.data.redirect;
+      .then(() => {
+        if(!Object.keys(redirectionUrls).includes(audience)) {
+          return;
+        }
+
+        const audienceUrl = redirectionUrls[audience];
+
+        if (!audienceUrl) {
+          return;
+        }
+
+        window.location.href = audienceUrl;
       })
       .catch((error) => {
         const response = error.response;
