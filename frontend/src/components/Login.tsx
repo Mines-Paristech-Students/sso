@@ -71,6 +71,7 @@ export default function Login(props: LoginProps) {
         password: password,
         audience: audience,
       })
+      .then((value) => axios.get(value.data.redirect as string))
       .then(() => {
         if(!Object.keys(redirectionUrls).includes(audience)) {
           return;
