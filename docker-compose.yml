@@ -38,6 +38,8 @@ services:
       context: frontend
       dockerfile: Dockerfile
     command: npm start
+    stdin_open: true
+    tty: true
     volumes:
       - './frontend:/app'
       - '/app/node_modules'
