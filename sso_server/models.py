@@ -8,7 +8,11 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
+    # Override AbstractUser field validation
     email = models.EmailField(blank=False, unique=True)
+    first_name = models.CharField(max_length=30, blank=False)
+    last_name = models.CharField(max_length=150, blank=False)
+    password = models.CharField(max_length=128, blank=True)
 
 
 class Access(models.Model):
