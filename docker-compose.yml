@@ -35,6 +35,9 @@ services:
       - ".:/app"
       - "/app/cli"
     profiles: ["dev", "prod"]
+    networks:
+      - default
+      - sso
 
   frontend-dev:
     build:
@@ -57,3 +60,7 @@ services:
     ports:
       - "3001:3001"
     profiles: ["prod"]
+
+networks:
+  sso:
+    driver: bridge
