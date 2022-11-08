@@ -90,8 +90,6 @@ WSGI_APPLICATION = "sso.wsgi.application"
 
 IDENTITY_WEBHOOK_URLS = env.dict("IDENTITY_WEBHOOK_URLS")
 
-ADMIN_ACCESS_TOKEN = env.str("ADMIN_ACCESS_TOKEN")
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 

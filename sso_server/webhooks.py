@@ -12,21 +12,23 @@ class IdentityWebhookService:
         if audience not in self.AUDIENCES:
             return
 
+        minimal_identity = model_to_dict(
+            user,
+            fields=(
+                "username",
+                "is_staff",
+                "is_active",
+                "email",
+                "first_name",
+                "last_name",
+            ),
+        )
+        minimal_identity["id"] = minimal_identity["username"]
+
         hook_url = self.IDENTITY_WEBHOOK_URLS[audience]
         audience_response = post(
             hook_url,
-            json=model_to_dict(
-                user,
-                fields=(
-                    "id",
-                    "username",
-                    "is_staff",
-                    "is_active",
-                    "email",
-                    "first_name",
-                    "last_name",
-                ),
-            ),
+            json=minimal_identity,
         )
 
         if audience_response.status_code == 201:
