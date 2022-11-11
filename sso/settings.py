@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-from datetime import timedelta
 import os
+from datetime import timedelta
 
 import environ
 
@@ -87,6 +87,9 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "sso.wsgi.application"
+
+IDENTITY_WEBHOOK_URLS = env.dict("IDENTITY_WEBHOOK_URLS")
+IDENTITY_API_KEYS = env.dict("IDENTITY_API_KEYS")
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
