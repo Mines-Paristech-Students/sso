@@ -62,11 +62,20 @@ class UserAdmin(admin.ModelAdmin):
                 User(**vals)
                 for vals in df.loc[:, df.columns != "audience"].to_dict("records")
             )
-            Access.objects.bulk_create(
-                Access(
-                    user=User.objects.get(username=user["username"]),
-                    audience=audience,
-                )
-                for user in df.to_dict("records")
-                for audience in user["audience"]
-            )
+            # Bulk create does not trigger signals: https://docs.djangoproject.com/en/1.8/ref/models/querysets/#bulk-create
+            # TODO: use this method when a bulk post identity route will be created on the portal side
+            # Access.objects.bulk_create(
+            #     Access(
+            #         user=User.objects.get(username=user["username"]),
+            #         audience=audience,
+            #     )
+            #     for user in df.to_dict("records")
+            #     for audience in user["audience"]
+            # )
+            for user in df.to_dict("records"):
+                for audience in user["audience"]:
+                    access = Access(
+                        user=User.objects.get(username=user["username"]),
+                        audience=audience,
+                    )
+                    access.save()
