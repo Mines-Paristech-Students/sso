@@ -112,6 +112,8 @@ EMAIL = {
     "PORT": env.str("EMAIL_PORT"),
 }
 
+FRONTEND_HOST = "http://localhost:3001"
+
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
