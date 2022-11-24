@@ -181,7 +181,9 @@ export default function Login(props: LoginProps) {
         </Form>
 
         <p>
-          <Link to="/mot-de-passe/oubli">Mot de passe oublié ?</Link>
+          <Link to="/mot-de-passe/oubli">
+            Première connexion ? Mot de passe oublié ?
+          </Link>
         </p>
 
         {alertErrorCode && (

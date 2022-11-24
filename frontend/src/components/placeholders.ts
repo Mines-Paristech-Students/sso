@@ -30,13 +30,13 @@ export const USERNAME_PLACEHOLDERS = [
 ];
 
 export const EMAIL_PLACEHOLDERS = [
-  "bde@mines-paristech.fr",
-  "bdl@mines-paristech.fr",
-  "bencheur@mines-paristech.fr",
-  "matmaz@mines-paristech.fr",
-  "peigne@mines-paristech.fr",
-  "picheur@mines-paristech.fr",
-  "zaza@mines-paristech.fr",
+  "bde@etu.minesparis.psl.eu",
+  "bdl@etu.minesparis.psl.eu",
+  "bencheur@etu.minesparis.psl.eu",
+  "matmaz@etu.minesparis.psl.eu",
+  "peigne@etu.minesparis.psl.eu",
+  "picheur@etu.minesparis.psl.eu",
+  "zaza@etu.minesparis.psl.eu",
 ];
 
 export const PASSWORD_PLACEHOLDERS = [

@@ -86,11 +86,11 @@ export default function RequestPasswordRecovery(props: Props) {
         <Link to="/mot-de-passe/oubli" onClick={() => window.location.reload()}>
           réessaye
         </Link>{" "}
-        ou <a href="mailto:rezal@mines-paristech.fr">contacte-nous</a>.
+        ou <a href="mailto:webmaster-bde@mines-paris.eu">contacte-nous</a>.
       </p>
     ) : (
       <p>
-        Donne-nous ton adresse mail <code>@mines-paristech.fr</code>.<br />
+        Donne-nous ton adresse mail <code>@etu.minesparis.psl.eu</code>.<br />
         Si on te connaît, tu recevras un lien pour changer ton mot de passe.
       </p>
     );
@@ -153,7 +153,7 @@ export default function RequestPasswordRecovery(props: Props) {
   }
 
   return (
-    <MainContainer heading={"Mot de passe oublié"}>
+    <MainContainer heading={"Réinitialiser mon mot de passe"}>
       {renderContent()}
     </MainContainer>
   );
